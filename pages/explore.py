@@ -99,4 +99,3 @@ else:
                     close=stock_data['close'])])
 
     st.plotly_chart(fig, use_container_width=True)
-
