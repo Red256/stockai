@@ -1,4 +1,5 @@
 altair==5.0.1
+alpaca_trade_api
 attrs==23.1.0
 blinker==1.6.2
 cachetools==5.3.1
