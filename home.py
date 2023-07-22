@@ -21,7 +21,7 @@ custom_css = """
 
 st.set_page_config(page_title= "Camp 1: programming, AL and Stock Trade", page_icon = "🔢", layout="wide")
 
-st.title("🔢 Stempro/Trovages Programming, AI and Stock Trade Summer Camp")
+st.title("🔢 Stempro/Trovapages Programming, AI and Stock Trade Summer Camp")
 
 st.markdown("#### Load alpaca api key and secret. Store them in session state so that other pages can use it as well.")
 
@@ -61,5 +61,3 @@ else:
             st.markdown(f"END_POINT --- {END_POINT}")
         else:
             st.warning('Wrong alpaca secret file or format incorrect', icon="⚠️")
-
-
