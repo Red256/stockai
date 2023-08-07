@@ -1,52 +1,51 @@
 ,Ticker,industry,sector,averageVolume,averageVolume10days,marketCap
-1154,RBLX,Electronic Gaming & Multimedia,Communication Services,9407408,9917200,25709670400
-12,CSCO,Communication Equipment,Technology,18663249,14578300,211169607680
+1408,VNCE,Apparel Manufacturing,Consumer Cyclical,5457,11120,34162728
+3028,ZKIN,Steel,Basic Materials,36867,16170,22050048
+3384,TBLT,Tools & Accessories,Industrials,842762,3775700,6542040
+2635,HNNA,Asset Management,Financial Services,8550,3770,54245520
+339,HQY,Health Information Services,Healthcare,559400,545080,5332535808
+2930,ENOB,Biotechnology,Healthcare,124865,481390,29690332
+1113,KWR,Specialty Chemicals,Basic Materials,95854,107830,3557141760
+54,MAR,Lodging,Consumer Cyclical,1698231,1542770,55886901248
+1671,NATR,Packaged Foods,Consumer Defensive,30103,42110,262445600
+893,MLR,Auto Parts,Consumer Cyclical,33783,34230,404439328
+948,NWL,Household & Personal Products,Consumer Defensive,6709559,5620440,3714477056
+1399,VGR,Tobacco,Consumer Defensive,678659,622260,2017798912
+2795,GAME,Electronic Gaming & Multimedia,Communication Services,47901,29950,40054500
+2664,CGTX,Biotechnology,Healthcare,153444,488290,51820644
+670,ENLT,Utilities—Renewable,Utilities,72450,71690,2071939328
+558,GLPG,Biotechnology,Healthcare,201436,97250,2696509184
+1680,BWC,Shell Companies,Financial Services,116685,26150,258976368
+1444,WU,Credit Services,Financial Services,5763172,4066870,4388765184
+2813,LICN,Specialty Business Services,Industrials,166729,25010,39023432
+1225,TRST,Banks—Regional,Financial Services,95481,87800,561600320
+2171,USCT,Shell Companies,Financial Services,32114,2590,118784856
+1373,WULF,Capital Markets,Financial Services,3330337,4691700,428304640
+2547,GLTO,Biotechnology,Healthcare,71977,51160,64953956
+79,AEP,Utilities—Regulated Electric,Utilities,2760477,3589430,43921969152
+128,FSLR,Solar,Technology,2458742,1616940,20445427712
+2341,SLNG,Oil & Gas Integrated,Energy,6145,4920,93687520
+2334,PWUP,Shell Companies,Financial Services,173839,300,94138184
+1416,NEWT,Banks—Regional,Financial Services,321804,589450,392261088
+1365,UMH,REIT—Residential,Real Estate,413808,654350,982814208
+220,BDN,REIT—Office,Real Estate,3017654,3338110,843187584
+360,NSIT,Electronics & Computer Distribution,Technology,331603,241180,4868950528
+152,ATHM,Internet Content & Information,Communication Services,442696,319360,3640163072
+402,DB,Banks—Regional,Financial Services,2729486,2254960,21748324352
+1657,AMTX,Oil & Gas Refining & Marketing,Energy,1307140,1164730,267467904
+2681,LPTH,Electronic Components,Technology,37367,25740,50020308
+2972,SALM,Broadcasting,Communication Services,27773,39620,26008374
+1983,KRNL,Shell Companies,Financial Services,12490,10830,158192992
+491,EFX,Consulting Services,Industrials,740121,785890,28101421056
+2323,CZWI,Banks—Regional,Financial Services,9854,9930,95092600
+1206,HBT,Banks—Regional,Financial Services,50767,68030,586668864
 4,NVDA,Semiconductors,Technology,47680777,44952090,1047601152000
-11,ADBE,Software—Infrastructure,Technology,3774995,3422420,222565826560
-6,META,Internet Content & Information,Communication Services,22693681,22057340,732991979520
-46,ATVI,Electronic Gaming & Multimedia,Communication Services,7515618,6320410,65518485504
-48,NTES,Electronic Gaming & Multimedia,Communication Services,1189354,1180310,64532824064
-61,MCHP,Semiconductors,Technology,4873849,3998780,49460875264
-1176,SAP,Software—Application,Technology,940165,665130,157282222080
-37,PANW,Software—Infrastructure,Technology,5480726,4872350,77882916864
-14,NFLX,Entertainment,Communication Services,6831285,5734270,196238180352
-519,FIS,Information Technology Services,Technology,5080962,5153850,34361344000
-2,GOOGL,Internet Content & Information,Communication Services,33547881,28691700,1526830596096
-97,AMX,Telecom Services,Communication Services,1118254,961110,70564626432
-1270,TMUS,Telecom Services,Communication Services,6525555,4527550,167180681216
-147,T,Telecom Services,Communication Services,39275572,31609420,115241885696
-1455,WIT,Information Technology Services,Technology,1912542,1708620,26334605312
-1272,TSM,Semiconductors,Technology,11944237,8728760,534978199552
-51,FTNT,Software—Infrastructure,Technology,5071549,5630420,58622738432
-17,TMUS,Telecom Services,Communication Services,6525555,4527550,167180681216
-44,KLAC,Semiconductor Equipment & Materials,Technology,1019481,740980,66516824064
-95,WBD,Entertainment,Communication Services,22341937,25268420,31693793280
-45,SNPS,Software—Infrastructure,Technology,978313,1147180,66038964224
-0,AAPL,Consumer Electronics,Technology,56888032,51655080,3027145850880
-30,ADI,Semiconductors,Technology,3415467,3180040,97440555008
-111,TTWO,Electronic Gaming & Multimedia,Communication Services,1729013,1600830,25015711744
-912,MSI,Communication Equipment,Technology,844167,1038020,49100828672
-24,AMAT,Semiconductor Equipment & Materials,Technology,5825744,5311220,122157998080
-1460,WDAY,Software—Application,Technology,2081768,1855550,58617987072
-7,AVGO,Semiconductors,Technology,2841186,2329380,361693642752
-101,ANSS,Software—Application,Technology,451245,422720,28333912064
-665,HPQ,Computer Hardware,Technology,7470731,8058300,30318145536
-579,IT,Information Technology Services,Technology,546909,472810,27440351232
-72,ON,Semiconductors,Technology,6769057,5139280,41818263552
-707,IBM,Information Technology Services,Technology,4505785,4728270,121378373632
-106,VOD,Telecom Services,Communication Services,5706439,5371930,25671579648
-1291,TU,Telecom Services,Communication Services,1385783,1455240,28467425280
-58,MRVL,Semiconductors,Technology,15081650,11685660,52760997888
-191,BCE,Telecom Services,Communication Services,1236670,1030470,41970466816
-699,INFY,Information Technology Services,Technology,11480645,9466000,66787643392
-59,BIDU,Internet Content & Information,Communication Services,2588900,2032750,50279591936
-15,AMD,Semiconductors,Technology,67860159,62499960,186511900672
-1280,TEL,Electronic Components,Technology,1425459,1333880,44235845632
-16,CMCSA,Telecom Services,Communication Services,18549680,14449840,174090338304
-998,ORCL,Software—Infrastructure,Technology,10226959,11820850,317975560192
-999,ORAN,Telecom Services,Communication Services,422224,453010,30983057408
-560,FI,Information Technology Services,Technology,3687267,2557660,77750198272
-100,MDB,Software—Infrastructure,Technology,1933419,2084880,29038600192
-8,ASML,Semiconductor Equipment & Materials,Technology,968265,819530,291939680256
-55,CHTR,Telecom Services,Communication Services,1076793,1211580,55441719296
-5,TSLA,Auto Manufacturers,Consumer Cyclical,138546314,158883480,886889512960
+1834,SFST,Banks—Regional,Financial Services,40781,29230,202648144
+800,LEJU,Real Estate Services,Real Estate,582842,145150,36213672
+1063,EBIX,Software—Application,Technology,533800,574100,811470784
+355,CPA,Airlines,Industrials,437413,606110,4383320576
+734,SJM,Packaged Foods,Consumer Defensive,887890,769580,15346848768
+52,AQN,Utilities—Renewable,Utilities,5234973,6952850,5863592448
+2904,FPAY,Rental & Leasing Services,Industrials,24286,34400,31758358
+3120,SHPH,Drug Manufacturers—Specialty & Generic,Healthcare,1498575,268160,16703809
+901,MHK,"Furnishings, Fixtures & Appliances",Consumer Cyclical,600186,542270,6573008384

@@ -1,0 +1,9 @@
+C:\development\poc\stockai\scripts_template\ticker_eda.py
+	line 39: ticker = random.choice(df_["Ticker"])
+		either use np.random 
+		or at the the top of the page: 
+			from random import random 
+	
+
+C:\development\poc\stockai\scripts_template\rs_rsi.py
+	need to add all the libraries	

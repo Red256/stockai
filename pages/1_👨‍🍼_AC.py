@@ -26,6 +26,17 @@ st.set_page_config(page_title= "Camp 1: Explore", page_icon = "🔢", layout="wi
 st.title("🔢 My StockAI Project")
 
 
+st.markdown("""
+    <style>
+    .block-container {
+    padding-top: 0rem;
+    padding-bottom: 0rem;
+    padding-right: 0rem;
+    padding-left: 2rem;
+    }
+    </style>
+    """)
+
 ######################################## tabs ########################################
 listTabs =["🧑‍🏭Data Exploration", "🧑‍🎓Load/Processing", "📈 Model Training", "🔢 My Finished Product", "        "]
 
