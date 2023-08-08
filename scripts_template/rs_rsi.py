@@ -174,3 +174,8 @@ def plot_RSI_streamlit(ticker,
 
     plt.xticks(rotation=90)
     plt.show()
+
+
+    # df = get_one_ticker_df('NWL', '1d')
+    # plot_RSI(df_ = df, ticker='NWL')
+    # print('abc')

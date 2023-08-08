@@ -28,6 +28,23 @@ from scripts_template.rs_rsi import plot_RSI, plot_RSI_streamlit
 
 from scripts_template.trade_rsi_strategy import plot_trading_points, create_plot_position
 
+from scripts_template.auto_arima import (
+        plot_stock,
+        test_stationarity,
+        check_trend_seasonality,
+        show_train_test,
+        train_autoarima)
+############################# Pay layout ################################################
+st.markdown("""
+    <style>
+            .block-container {
+            padding-top: 0rem;
+            padding-bottom: 0rem;
+            padding-right: 1rem;
+            padding-left: 1rem;
+            }
+    </style>
+""", unsafe_allow_html=True)
 ############################# path for our custom libraries #############################
 # padding_top,padding_left = 100, 1
 # st.markdown(f'''
@@ -41,7 +58,11 @@ from scripts_template.trade_rsi_strategy import plot_trading_points, create_plot
 st.title(f"🔢 Template's StockAI Project")
 
 ######################################################## tabs ########################################################
-listTabs =["🧑‍🏭Data Exploration", "🧑‍🎓Trade Strategies", "📈 Model Training", "🔢 My Finished Product", "        "]
+listTabs =["🧑‍🏭Data Exploration",
+           "🧑‍🎓Trade Strategies RSI",
+           "🧑‍🎓Trade Strategies ARIMA",
+           "📈 Model Training",
+           "🔢 My Finished Product", "        "]
 
 whitespace = 9
 ## Fills and centers each tab label with em-spaces
@@ -136,17 +157,19 @@ with tabs[0]:
         get_histories()
         st.success("Successfully load historical data (1d, 1m and 5m)")
 
-######################################################## Data Processing ########################################################
+######################################################## RSI ########################################################
 with tabs[1]:
-    st.markdown("<font size=4><b>Trade Strategies </b></font><font size=3>Check and Inspect RSI and ARIMA Positioning.</font>", unsafe_allow_html=True)
+    st.markdown("<font size=4><b>Trade Strategies RSI </b></font><font size=3>Check and Inspect RSI and ARIMA Positioning.</font>", unsafe_allow_html=True)
     col1, col2, col3, col4, col5, col6 = st.columns([2,2,2,2,2,2 ])
     with col1:
         ticker_position = st.selectbox("Choose a Ticker for Positioning", index=0, options = stock_tickers)
     with col2:
         interval_position = st.selectbox("Time Positoining Granularity", index=0, options = intervals)
     with col3:
-        col3.markdown("")
-        col3.markdown("")
+        price_rsi = st.selectbox("Price Type RSI", index=3, options = prices)
+    with col4:
+        col4.markdown("")
+        col4.markdown("")
         btn_load_position = st.button("Inspect and Check")
 
     #### markdown 1: checking
@@ -154,11 +177,76 @@ with tabs[1]:
 
     if btn_load_position:
         # trading points
-        plot_trading_points(ticker=ticker_position,interval=interval_position)
+        plot_trading_points(ticker=ticker_position,interval=interval_position, price_type=price_rsi)
         st.pyplot(plt)
         plt.clf()
 
         # positioning
-        create_plot_position(ticker=ticker_position,interval=interval_position)
+        create_plot_position(ticker=ticker_position,interval=interval_position, price_type=price_rsi)
         st.pyplot(plt)
         plt.clf()
+
+######################################################## ARMIA ########################################################
+with tabs[2]:
+    st.markdown("<font size=4><b>Trade Strategies ARIMA </b></font><font size=3>Check and Inspect ARIMA Positioning.</font>", unsafe_allow_html=True)
+    col1, col2, col3, col4, col5, col6 = st.columns([2,2,2,2,2,2 ])
+    with col1:
+        ticker_arima = st.selectbox("Choose a Ticker for ARIMA Positioning", index=0, options = stock_tickers)
+    with col2:
+        interval_arima = st.selectbox("Time Positoining ARIMA Granularity", index=0, options = intervals)
+    with col3:
+        price_arima = st.selectbox("Price Type Arima", index=3, options = prices)
+    with col4:
+        col4.markdown("")
+        col4.markdown("")
+        btn_load_arima = st.button("Inspect and Check ARIMA")
+
+    #### markdown 1: checking
+    st.markdown("<font color=blue size=5><b>A. Inspect Positioning Using ARIMA</b></font>", unsafe_allow_html=True)
+
+    if btn_load_arima:
+        # stock price
+        plot_stock(ticker=ticker_arima, interval=interval_arima)
+        st.pyplot(plt)
+        plt.clf()
+
+        # trading plot stock
+        dftest, dfoutput  = test_stationarity(ticker=ticker_arima,interval=interval_arima, price_type="Close")
+        st.pyplot(plt)
+        plt.clf()
+        # additional inf
+        for key,value in dftest[4].items():
+            dfoutput['Critical Value (%s)'%key] = value
+        dfoutput.columns = ['Values']
+        # st.dataframe(dfoutput)
+        p_value = dfoutput['p-value']
+        if p_value < 0.05:
+            st.markdown(f"#### result : p-value is {'{:.2f}'.format(p_value)}. This time series is stationary")
+        else :
+            p_value = {':.2f'}.format(p_value)
+            st.markdown(f"#### result : p-value is {'{:.2f}'.format(p_value)}. This time series is not stationary")
+
+        # check seasonality
+        check_trend_seasonality(ticker=ticker, interval=interval, price_type=price_arima,
+                                plot_percentage_change=False)
+        st.pyplot(plt)
+        plt.clf()
+
+        # auto arima
+        forecast, autoarima_summary, order = train_autoarima(ticker=ticker_arima,
+                     interval=interval_arima,
+                     price_type=price_arima,
+                     plot_percentage_change=False)
+        # st.pyplot(plt)
+        # plt.clf()
+
+        st.write(autoarima_summary)
+
+        st.markdown(f"### Signature of the this time series: ")
+        p,d,q = order
+        st.markdown(f"{p}: Lags in autoregressive component.")
+        st.markdown(f"{d}: Number of times differenced.")
+        st.markdown(f"{q}: Lags in moving average.")
+
+        st.markdown(f"### Forecast for next 5 days: ")
+        st.write(forecast.values)

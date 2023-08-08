@@ -11,6 +11,16 @@ sys.path.insert(0, DIR)
 # App title and header
 st.set_page_config(page_title="Programs. ", page_icon=None, layout="wide", initial_sidebar_state="auto")
 #apply_style()
+st.markdown("""
+    <style>
+            .block-container {
+            padding-top: 1rem;
+            padding-bottom: 0rem;
+            padding-right: 1rem;
+            padding-left: 1rem;
+            }
+    </style>
+""", unsafe_allow_html=True)
 
 ######################################## tabs ########################################
 listTabs =["🧑‍🏭Junior AI", "🧑‍🎓College Ready", "📈 Math In Programming", "🔢 On-demand", "        "]

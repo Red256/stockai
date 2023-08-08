@@ -3,23 +3,18 @@ import pandas as pd
 import json
 import re
 
-custom_css = """
-    <style>
-        table {
-            border-collapse: collapse;
-            width: 100%
-        }
-        th, td {
-            border : 1px solid black;
-            padding: 8px;
-            text-align: left;
-            white-space: pre-wrap;
-            word-wrap: break-word
-        }
-    </style>
-"""
-
 st.set_page_config(page_title= "Camp 1: programming, AL and Stock Trade", page_icon = "🔢", layout="wide")
+
+st.markdown("""
+    <style>
+            .block-container {
+            padding-top: 0rem;
+            padding-bottom: 0rem;
+            padding-right: 1rem;
+            padding-left: 1rem;
+            }
+    </style>
+""", unsafe_allow_html=True)
 
 st.title("🔢 Stempro/Trovapages Programming, AI and Stock Trade Summer Camp")
 
