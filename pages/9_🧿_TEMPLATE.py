@@ -436,7 +436,7 @@ with tabs[4]:
 
 ######################################################## Trading Zone ########################################################
 with tabs[5]:
-    st.markdown("#### Load alpaca api key and secret. Store them in session state so that other pages can use it as well.")
+    st.markdown("#### Load alpaca api key and secret.")
 
     # st.session_state.update(st.session_state) # only need when run in cloud
 
@@ -447,7 +447,9 @@ with tabs[5]:
             del st.session_state["API_KEY"]
             del st.session_state["API_SECRET"]
     else:
-        key_file = st.file_uploader("upload alpaca key/secret file", type={"json"})
+        col1, col2 = st.columns([3, 5])
+        with col1:
+            key_file = st.file_uploader("upload alpaca key/secret file", type={"json"})
         if key_file is not None:
             key_file_json = json.load(key_file)
 
