@@ -1,4 +1,4 @@
-import  pandas as pd 
+import  pandas as pd
 
 class DataProcessing():
     def __init__(self):
@@ -10,6 +10,5 @@ class DataProcessing():
         cols = [col for col in columns if col in list(df)]
         if cols:
             df.drop(columns=cols, inplace=True)
-            print("things are")
             return df
         return df

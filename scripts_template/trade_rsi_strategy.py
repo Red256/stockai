@@ -1,4 +1,5 @@
 import os
+import re
 import sys
 import numpy as np
 import matplotlib.pyplot as plt
@@ -10,7 +11,7 @@ SCRIPTS_PATH = f"{PROJECT_PATH}/scripts_template"
 sys.path.append(PROJECT_PATH)
 
 from scripts_template.generate_ticker_list import choose_and_save_my_list, get_ticker_list
-from scripts_template.get_histories import get_histories, get_one_ticker_df
+from scripts_template.get_histories import download_histories, get_one_ticker_df
 from scripts_template.rs_rsi import compute_RSI
 from utility import DataProcessing
 
@@ -31,6 +32,7 @@ def implement_rsi_strategy(ticker, interval, price_type="Close", rsi_name='RSI_1
                 start with signal = 0: means the first signal has to be buy
                 signal: 1 ---- buy
                         -1 ---- sell
+        output:  buy_price, sell_price, rsi_signal, df_
     """
     # get df_ by calling get_one_ticker_df
     df_ = get_one_ticker_df(ticker=ticker, interval=interval)
@@ -142,6 +144,7 @@ def create_position(ticker, interval, rsi_signal, price_type='Close', rsi_name='
         create positions use the signals from trading strategy
         input: df_ is the pricing history
                rsi_signal: as if we bought or sold the stock
+        output: df_position
     """
     # call implent_rsi_strategy to get buy/sell prices
     _, _, rsi_signal, df_ = \

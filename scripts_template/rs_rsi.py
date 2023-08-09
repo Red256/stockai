@@ -9,7 +9,7 @@ SCRIPTS_PATH = f"{PROJECT_PATH}/scripts_template"
 sys.path.append(PROJECT_PATH)
 
 from scripts_template.generate_ticker_list import choose_and_save_my_list, get_ticker_list
-from scripts_template.get_histories import get_histories, get_one_ticker_df
+from scripts_template.get_histories import download_histories, get_one_ticker_df
 
 
 def compute_RSI(df_,
@@ -130,7 +130,7 @@ def plot_RSI_streamlit(ticker,
                 min_periods: this is for cal ewm valuess. min periods to start
                     calculating
     """
-    df_ =  get_one_ticker_df(ticker,interval) # from another module: get_histories
+    df_ =  get_one_ticker_df(ticker,interval) # from another module: download_histories
     if df_.shape[0] > 250:
         df_ = df_.iloc[-250:]
 

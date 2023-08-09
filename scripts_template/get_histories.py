@@ -17,10 +17,8 @@ sys.path.append(PROJECT_PATH)
 from scripts_template.generate_ticker_list import choose_and_save_my_list
 
 # get historical data for analysis
-def get_histories(intervals=["1m","5m","1d"],
-                  max_tickers_per_call = 100,
-                  reload=True,
-                  your_project_file = None):
+def download_histories(intervals=["1m","5m","1d"],
+                  max_tickers_per_call = 100 ):
     """
         action: load, dump
         to simplify, we use all fix file name and folder name.

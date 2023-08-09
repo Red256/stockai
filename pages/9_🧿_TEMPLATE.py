@@ -21,7 +21,7 @@ SCRIPTS_PATH = f"{PROJECT_PATH}/scripts_template"
 sys.path.append(PROJECT_PATH)
 
 from scripts_template.generate_ticker_list import choose_and_save_my_list, get_ticker_list
-from scripts_template.get_histories import get_histories, get_one_ticker_df
+from scripts_template.get_histories import download_histories, get_one_ticker_df
 
 from scripts_template.ticker_eda import visualize_sma_one_ticker, visualize_ewm_one_ticker
 from scripts_template.rs_rsi import plot_RSI, plot_RSI_streamlit
@@ -34,6 +34,8 @@ from scripts_template.auto_arima import (
         check_trend_seasonality,
         show_train_test,
         train_autoarima)
+
+from scripts_template.model_training import load_performance, rsi_model, arima_model
 ############################# Pay layout ################################################
 st.markdown("""
     <style>
@@ -60,7 +62,7 @@ st.title(f"🔢 Template's StockAI Project")
 ######################################################## tabs ########################################################
 listTabs =["🧑‍🏭Data Exploration",
            "🧑‍🎓Trade Strategies RSI",
-           "🧑‍🎓Trade Strategies ARIMA",
+           "🧿Trade Strategies ARIMA",
            "📈 Model Training",
            "🔢 My Finished Product", "        "]
 
@@ -154,7 +156,7 @@ with tabs[0]:
         st.success("Successfully generate a new list of tickers")
 
     if btn_historical:
-        get_histories()
+        download_histories()
         st.success("Successfully load historical data (1d, 1m and 5m)")
 
 ######################################################## RSI ########################################################
@@ -250,3 +252,54 @@ with tabs[2]:
 
         st.markdown(f"### Forecast for next 5 days: ")
         st.write(forecast.values)
+
+
+######################################################## model training ########################################################
+with tabs[3]:
+    st.markdown("<font size=4><b>Trade Strategies ARIMA </b></font><font size=3>Model Training And Ranking</font>", unsafe_allow_html=True)
+    st.markdown("<font size=3><b>RSI Ranking By Performance</b></font>", unsafe_allow_html=True)
+
+    @st.cache_data
+    def load_():
+        return load_performance("RSI"), load_performance("ARIMA")
+
+    df_rsi, df_arima = load_()
+
+    col1, col2, col3 , col4, col5 = st.columns([2,2,2,2,8])
+    with col1:
+        col1.markdown("")
+        st.markdown("RSI Last Trained")
+    with col2:
+        col2.markdown("")
+        if df_rsi.shape[0]>0:
+            trained_on = df_rsi.iloc[0]["trained_on"]
+        st.markdown(trained_on)
+
+    with col4:
+        # col4.markdown("")
+        # col4.markdown("")
+        btn_train_rsi = st.button("Retrain RSI")
+    st.dataframe(df_rsi)
+
+    st.markdown("<font size=3><b>ARIMA Ranking By Performance</b></font>", unsafe_allow_html=True)
+    col1, col2, col3 , col4, col5 = st.columns([2,2,2,2,8])
+    with col1:
+        st.markdown("ARIMA Last Trained")
+    with col2:
+        if df_arima.shape[0]>0:
+            trained_on = df_arima.iloc[0]["trained_on"]
+        st.markdown(trained_on)
+
+    with col4:
+        # col4.markdown("")
+        # col4.markdown("")
+        btn_train_arima = st.button("Retrain ARIMA")
+    st.dataframe(df_arima)
+
+    if btn_train_rsi:
+        st.warning("Retrain RSI...")
+        rsi_model()
+
+    if btn_train_arima:
+        st.warning("Retrain ARIMA Model. It will take a few minutes to hours depending on how many tickers you are training")
+        arima_model()
