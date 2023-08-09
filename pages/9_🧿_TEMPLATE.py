@@ -33,9 +33,12 @@ from scripts_template.auto_arima import (
         test_stationarity,
         check_trend_seasonality,
         show_train_test,
-        train_autoarima)
+        train_autoarima,
+        arima_forecast)
 
-from scripts_template.model_training import load_performance, rsi_model, arima_model
+from scripts_template.model_training import load_performance, rsi_model, arima_model, get_candidates
+
+from scripts_template.trade_alpaca import get_balance, get_positions, get_pending_orders
 ############################# Pay layout ################################################
 st.markdown("""
     <style>
@@ -64,7 +67,8 @@ listTabs =["🧑‍🏭Data Exploration",
            "🧑‍🎓Trade Strategies RSI",
            "🧿Trade Strategies ARIMA",
            "📈 Model Training",
-           "🔢 My Finished Product", "        "]
+           "🔢 Trading Zone",
+           "📚 Alpaca Keys", "        "]
 
 whitespace = 9
 ## Fills and centers each tab label with em-spaces
@@ -303,3 +307,170 @@ with tabs[3]:
     if btn_train_arima:
         st.warning("Retrain ARIMA Model. It will take a few minutes to hours depending on how many tickers you are training")
         arima_model()
+
+######################################################## Trading Zone ########################################################
+with tabs[4]:
+    st.markdown("<font size=5><b>Positions and Trading Zone. </b></font><font size=3> <font size=3><b>Paper Money Only</b></font>", unsafe_allow_html=True)
+
+    portfolio, cashbalance = get_balance()
+    df_positions = get_positions()
+
+    col1, col2, col3 , col4, col5 = st.columns([4,4,2,2,8])
+    with col1:
+        st.markdown(f"Your Overall Portfolios: <font color=blue><b>{portfolio} </b></font>", unsafe_allow_html=True)
+    with col2:
+        st.markdown(f"Available Funding for Buy: <font color=blue><b>{cashbalance} </b></font>", unsafe_allow_html=True)
+
+    st.markdown(f"### Action")
+    alpaca_action = st.radio( "Action", ('Buy', 'Sell', 'Check Portfolios', 'Cancel An Order'), index=2, horizontal =True)
+
+    @st.cache_data
+    def get_performance_ranking_list():
+        rsi_candidates, arima_candidates = get_candidates()
+        return rsi_candidates, arima_candidates
+
+    @st.cache_data
+    def get_pending():
+        buying, selling = get_pending_orders( )
+        return buying, selling
+    def format_func(option):
+            return rsi_candidates[option]
+
+    if alpaca_action == "Check Portfolios":
+        st.markdown(f"### My Positions in Alpaca")
+        st.dataframe(df_positions)
+
+        buying, selling = get_pending()
+        st.markdown(f"#### Buying Orders Alpaca")
+        st.dataframe(buying)
+
+        st.markdown(f"#### Selling Orders in Alpaca")
+        st.dataframe(selling)
+    elif alpaca_action == "Cancel An Order":
+        buying, selling = get_pending()
+        st.markdown(f"#### Buying Orders Alpaca")
+        st.dataframe(buying)
+
+        st.markdown(f"#### Selling Orders in Alpaca")
+        st.dataframe(selling)
+
+        col1, col2, col3 = st.columns([2, 2, 8])
+        with col1:
+            order_cancel = st.text_input("Enter an Order to Cancel", value="")
+        with col2:
+            st.markdown("")
+            st.markdown("")
+            btn_cancel_order = st.button("Submit an Order Cancellation Request")
+
+    else:
+        rsi_candidates, arima_candidates = get_performance_ranking_list()
+        if alpaca_action == "Buy":
+            # choose Strateby
+            trade_model = st.radio( "Model", ('RSI', 'ARIMA'), index=0, horizontal =True)
+            if trade_model == "RSI":
+                col1, col2, col3 , col4, col5, col6 = st.columns([5, 2, 2, 2, 2, 4])
+                with col1:
+                    st.selectbox("Select a Ticker", options=list(rsi_candidates.keys()), format_func=format_func)
+                with col2:
+                    st.number_input("When RSI Reaches:", min_value=1, max_value=100)
+                with col3:
+                    st.number_input("Amount to allocate:", min_value=1, max_value=100000)
+                with col4:
+                    option = st.selectbox(
+                        'Order Type:', ('Day', 'Good Till Cancel', "Market Order"))
+                btn_buy_rsi = st.button("Submit Alpaca Order RSI -- Buy")
+            else: #ARIMA
+                col1, col2 = st.columns([4, 12])
+                with col1:
+                    predict_ticker = st.selectbox("Select a Ticker", options=list(arima_candidates.keys()), format_func=format_func)
+
+                df_arima_forecast = arima_forecast(ticker=predict_ticker)
+
+                st.markdown("<font><b>Forecast for next 5 days of closing price</b></font>", unsafe_allow_html=True)
+                st.dataframe(df_arima_forecast)
+
+                col1, col2, col3, col4 = st.columns([3, 3, 3, 6])
+                with col1:
+                    st.number_input("Target Price (or below):")
+                with col2:
+                    st.number_input("Amount to allocate:", min_value=1, max_value=100000)
+                with col3:
+                    option = st.selectbox(
+                        'Order Type:', ('Day', 'Good Till Cancel', "Market Order"))
+                btn_buy_rsi = st.button("Submit Alpaca Order ARIMA -- Buy")
+        else: # alpaca_action == "Sell":
+            # choose Strateby
+            trade_model = st.radio( "Model", ('RSI', 'ARIMA'), index=0, horizontal =True)
+            if trade_model == "RSI":
+                col1, col2, col3 , col4, col5, col6 = st.columns([5, 2, 2, 2, 2, 4])
+                with col1:
+                    st.selectbox("Select a Ticker", options=list(rsi_candidates.keys()), format_func=format_func)
+                with col2:
+                    st.number_input("When RSI Reaches:", min_value=1, max_value=100)
+                with col3:
+                    st.number_input("Shares to Sell:", min_value=1, max_value=100000)
+                with col4:
+                    option = st.selectbox(
+                        'Order Type:', ('Day', 'Good Till Cancel', "Market Order"))
+                btn_buy_rsi = st.button("Submit Alpaca Order RSI -- Sell")
+            else: #ARIMA
+                col1, col2 = st.columns([4, 12])
+                with col1:
+                    predict_ticker = st.selectbox("Select a Ticker", options=list(arima_candidates.keys()), format_func=format_func)
+
+                df_arima_forecast = arima_forecast(ticker=predict_ticker)
+
+                st.markdown("<font><b>Forecast for next 5 days of closing price</b></font>", unsafe_allow_html=True)
+                st.dataframe(df_arima_forecast)
+
+                col1, col2, col3, col4 = st.columns([3, 3, 3, 6])
+                with col1:
+                    st.number_input("Target Price (or above):")
+                with col2:
+                    st.number_input("Shares to Sell:", min_value=1, max_value=100000)
+                with col3:
+                    option = st.selectbox(
+                        'Order Type:', ('Day', 'Good Till Cancel', "Market Order"))
+                btn_buy_rsi = st.button("Submit Alpaca Order ARIMA - Sell")
+
+
+######################################################## Trading Zone ########################################################
+with tabs[5]:
+    st.markdown("#### Load alpaca api key and secret. Store them in session state so that other pages can use it as well.")
+
+    # st.session_state.update(st.session_state) # only need when run in cloud
+
+    if "API_KEY" in st.session_state:
+        st.markdown("alpaca api key and secret have already been loaded")
+        reload = st.button("re-load/refresh api key/secret")
+        if reload:
+            del st.session_state["API_KEY"]
+            del st.session_state["API_SECRET"]
+    else:
+        key_file = st.file_uploader("upload alpaca key/secret file", type={"json"})
+        if key_file is not None:
+            key_file_json = json.load(key_file)
+
+            has_all_info = 0
+            if "API_KEY" in key_file_json:
+                API_KEY = key_file_json["API_KEY"]
+                st.session_state.API_KEY = API_KEY
+                has_all_info += 1
+            if "API_SECRET" in key_file_json:
+                API_SECRET = key_file_json["API_SECRET"]
+                st.session_state.API_SECRET = API_SECRET
+                has_all_info += 1
+            if "END_POINT" in key_file_json:
+                END_POINT = key_file_json["END_POINT"]
+                st.session_state.END_POINT = END_POINT
+                has_all_info += 1
+
+            if has_all_info == 3:
+                st.markdown("### Successfully load alpaca key, secret and endpoint ")
+                masked = re.sub('\w', '*', API_KEY[:-4])
+                st.markdown(f"API_KEY --- {masked + API_KEY[-4:]}")
+                masked = re.sub('\w', '*', API_SECRET[:-4])
+                st.markdown(f"API_SECRET --- {masked + API_SECRET[-4:]}")
+                st.markdown(f"END_POINT --- {END_POINT}")
+            else:
+                st.warning('Wrong alpaca secret file or format incorrect', icon="⚠️")

@@ -113,3 +113,9 @@ def arima_model():
 
     # arima_model()
     # print('adf')
+
+def get_candidates():
+    """
+        return two dictionaries
+    """
+    return {"AAPL": "AAPL. Rank 1. 90% return"},  {"AAPL": "AAPL. Rank 1. 90% return"}

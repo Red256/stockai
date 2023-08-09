@@ -349,7 +349,6 @@ def train_autoarima(ticker,
         forecast = np.cumsum(forecast_diff) + original_series[-d]
     return forecast, model_autoARIMA.summary(), order
 
-
 def train_autoarima_for_batch(ticker,
                      interval,
                      price_type,
@@ -447,6 +446,13 @@ def train_autoarima_for_batch(ticker,
         forecast = np.cumsum(forecast_diff) + original_series[-d]
     return forecast, test[:predict_n],  order, df_[plot_col][index_train_end: index_train_end+predict_n]
 
+def arima_forecast(ticker,
+                     interval='1d',
+                     price_type="Close",
+                     plot_percentage_change=True,
+                     test_size=0.2,
+                     predict_n = 5):
+    return [34, 43, 34, 33, 32]
     # fc = train_autoarimma('NWL', '1d', 'Close', plot_percentage_change=False)
     # #show_train_test('NWL', '1d', 'Close')
     # #check_trend_seasonality('NWL', '1d', 'Close')
