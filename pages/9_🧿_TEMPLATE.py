@@ -268,7 +268,7 @@ with tabs[3]:
     col1, col2, col3 , col4, col5 = st.columns([2,2,2,2,14])
     with col1:
         col1.markdown("")
-        st.markdown("RSI Last Trained:")
+        st.markdown("RSI Last Trained(UTC):")
     with col2:
         col2.markdown("")
         if df_rsi.shape[0]>0:
@@ -284,7 +284,7 @@ with tabs[3]:
     st.markdown("<font size=3><b>ARIMA Ranking By Performance</b></font>", unsafe_allow_html=True)
     col1, col2, col3 , col4, col5 = st.columns([2,2,2,2,8])
     with col1:
-        st.markdown("ARIMA Last Trained")
+        st.markdown("ARIMA Last Trained(UTC)")
     with col2:
         if df_arima.shape[0]>0:
             trained_on = df_arima.iloc[0]["trained_on"]

@@ -59,7 +59,7 @@ def rsi_model():
             pass
     df_result = pd.DataFrame(performances,
         columns = ["ticker", "interval", "price_type", "starting", "ending", "performance"] )
-    df_result["trained_on"] =datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M")
+    df_result["trained_on"] =datetime.strftime(datetime.utcnow(), "%Y-%m-%d %H:%M")
 
     # ranking
     df_result["rank"] = df_result["performance"].rank(ascending=False, method="first").astype(int)
@@ -104,7 +104,7 @@ def arima_model():
             pass
     df_result = pd.DataFrame(performances,
         columns = ["ticker", "interval", "price_type", "next_forecast", "next_true", "mape", "p", "d", "q"] )
-    df_result["trained_on"] =datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M")
+    df_result["trained_on"] =datetime.strftime(datetime.utcnow(), "%Y-%m-%d %H:%M")
 
     # ranking
     df_result["rank"] = df_result["mape"].rank(ascending=True, method="first").astype(int)
