@@ -62,7 +62,7 @@ def rsi_model():
     df_result["trained_on"] =datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M")
 
     # ranking
-    df_result["rank"] = df_result["performance"].rank(ascending=False).astype(int)
+    df_result["rank"] = df_result["performance"].rank(ascending=False, method="first").astype(int)
     df_result.sort_values(by="rank", ascending=True, inplace=True)
     df_result.to_csv(output_file)
 
@@ -107,7 +107,7 @@ def arima_model():
     df_result["trained_on"] =datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M")
 
     # ranking
-    df_result["rank"] = df_result["mape"].rank(ascending=True).astype(int)
+    df_result["rank"] = df_result["mape"].rank(ascending=True, method="first").astype(int)
     df_result.sort_values(by="rank", ascending=True, inplace=True)
     df_result.to_csv(output_file)
 

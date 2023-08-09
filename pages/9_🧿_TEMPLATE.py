@@ -161,21 +161,21 @@ with tabs[0]:
 
 ######################################################## RSI ########################################################
 with tabs[1]:
-    st.markdown("<font size=4><b>Trade Strategies RSI </b></font><font size=3>Check and Inspect RSI and ARIMA Positioning.</font>", unsafe_allow_html=True)
-    col1, col2, col3, col4, col5, col6 = st.columns([2,2,2,2,2,2 ])
+    st.markdown("<font size=4><b>Trade Strategies RSI </b></font><font size=3>Check and Inspect RSI Positioning.</font>", unsafe_allow_html=True)
+    col1, col2, col3, col4, col5 = st.columns([2,2,2,2,2 ])
     with col1:
         ticker_position = st.selectbox("Choose a Ticker for Positioning", index=0, options = stock_tickers)
     with col2:
         interval_position = st.selectbox("Time Positoining Granularity", index=0, options = intervals)
     with col3:
-        price_rsi = st.selectbox("Price Type RSI", index=3, options = prices)
+        price_rsi = st.selectbox("Choose Price Type", index=3, options = prices)
     with col4:
         col4.markdown("")
         col4.markdown("")
-        btn_load_position = st.button("Inspect and Check")
+        btn_load_position = st.button("Inspect RSI Positioning")
 
     #### markdown 1: checking
-    st.markdown("<font color=blue size=5><b>A. Inspect Positioning Using RSI</b></font>", unsafe_allow_html=True)
+    st.markdown("<font color=blue size=5><b>Inspect Positioning Using RSI</b></font>", unsafe_allow_html=True)
 
     if btn_load_position:
         # trading points
@@ -190,21 +190,21 @@ with tabs[1]:
 
 ######################################################## ARMIA ########################################################
 with tabs[2]:
-    st.markdown("<font size=4><b>Trade Strategies ARIMA </b></font><font size=3>Check and Inspect ARIMA Positioning.</font>", unsafe_allow_html=True)
-    col1, col2, col3, col4, col5, col6 = st.columns([2,2,2,2,2,2 ])
+    st.markdown("<font size=4><b>Trade Strategies ARIMA </b></font><font size=3>Check and Inspect ARIMA Modeling.</font>", unsafe_allow_html=True)
+    col1, col2, col3, col4, col5 = st.columns([2,2,2,2,2 ])
     with col1:
-        ticker_arima = st.selectbox("Choose a Ticker for ARIMA Positioning", index=0, options = stock_tickers)
+        ticker_arima = st.selectbox("Choose a Ticker for ARIMA Modeling", index=0, options = stock_tickers)
     with col2:
-        interval_arima = st.selectbox("Time Positoining ARIMA Granularity", index=0, options = intervals)
+        interval_arima = st.selectbox("Choose ARIMA Granularity", index=0, options = intervals)
     with col3:
-        price_arima = st.selectbox("Price Type Arima", index=3, options = prices)
+        price_arima = st.selectbox("Select Price Type", index=3, options = prices)
     with col4:
         col4.markdown("")
         col4.markdown("")
-        btn_load_arima = st.button("Inspect and Check ARIMA")
+        btn_load_arima = st.button("Inspect ARIMA Modeling")
 
     #### markdown 1: checking
-    st.markdown("<font color=blue size=5><b>A. Inspect Positioning Using ARIMA</b></font>", unsafe_allow_html=True)
+    st.markdown("<font color=blue size=5><b>Inspect ARIMA Modeling</b></font>", unsafe_allow_html=True)
 
     if btn_load_arima:
         # stock price
@@ -256,7 +256,7 @@ with tabs[2]:
 
 ######################################################## model training ########################################################
 with tabs[3]:
-    st.markdown("<font size=4><b>Trade Strategies ARIMA </b></font><font size=3>Model Training And Ranking</font>", unsafe_allow_html=True)
+    st.markdown("<font size=4><b>Positioning, Model Training And Ranking</b></font><font size=3>", unsafe_allow_html=True)
     st.markdown("<font size=3><b>RSI Ranking By Performance</b></font>", unsafe_allow_html=True)
 
     @st.cache_data
@@ -265,15 +265,15 @@ with tabs[3]:
 
     df_rsi, df_arima = load_()
 
-    col1, col2, col3 , col4, col5 = st.columns([2,2,2,2,8])
+    col1, col2, col3 , col4, col5 = st.columns([2,2,2,2,14])
     with col1:
         col1.markdown("")
-        st.markdown("RSI Last Trained")
+        st.markdown("RSI Last Trained:")
     with col2:
         col2.markdown("")
         if df_rsi.shape[0]>0:
             trained_on = df_rsi.iloc[0]["trained_on"]
-        st.markdown(trained_on)
+        st.markdown(f"<font color=blue><b>{trained_on}</b></font>", unsafe_allow_html=True)
 
     with col4:
         # col4.markdown("")
@@ -288,7 +288,7 @@ with tabs[3]:
     with col2:
         if df_arima.shape[0]>0:
             trained_on = df_arima.iloc[0]["trained_on"]
-        st.markdown(trained_on)
+        st.markdown(f"<font color=blue><b>{trained_on}</b></font>", unsafe_allow_html=True)
 
     with col4:
         # col4.markdown("")
