@@ -333,8 +333,11 @@ with tabs[4]:
     def get_pending():
         buying, selling = get_pending_orders( )
         return buying, selling
-    def format_func(option):
+
+    def format_func_rsi(option):
             return rsi_candidates[option]
+    def format_func_arima(option):
+            return arima_candidates[option]
 
     if alpaca_action == "Check Portfolios":
         st.markdown(f"### My Positions in Alpaca")
@@ -363,78 +366,102 @@ with tabs[4]:
             btn_cancel_order = st.button("Submit an Order Cancellation Request")
 
     else:
-        rsi_candidates, arima_candidates = get_performance_ranking_list()
-        if alpaca_action == "Buy":
-            # choose Strateby
-            trade_model = st.radio( "Model", ('RSI', 'ARIMA'), index=0, horizontal =True)
-            if trade_model == "RSI":
-                col1, col2, col3 , col4, col5, col6 = st.columns([5, 2, 2, 2, 2, 4])
-                with col1:
-                    st.selectbox("Select a Ticker", options=list(rsi_candidates.keys()), format_func=format_func)
-                with col2:
-                    st.number_input("When RSI Reaches:", min_value=1, max_value=100)
-                with col3:
-                    st.number_input("Amount to allocate:", min_value=1, max_value=100000)
-                with col4:
-                    option = st.selectbox(
-                        'Order Type:', ('Day', 'Good Till Cancel', "Market Order"))
-                btn_buy_rsi = st.button("Submit Alpaca Order RSI -- Buy")
-            else: #ARIMA
-                col1, col2 = st.columns([4, 12])
-                with col1:
-                    predict_ticker = st.selectbox("Select a Ticker", options=list(arima_candidates.keys()), format_func=format_func)
+        if "API_KEY" not in st.session_state:
+            st.warning(f"### Alpaca Paper Trade API KEY not available. Please load keys to proceed")
+        else:
+            rsi_candidates, arima_candidates = get_performance_ranking_list()
+            if alpaca_action == "Buy":
+                # choose Strateby
+                trade_model = st.radio( "Model", ('RSI', 'ARIMA'), index=0, horizontal =True)
+                if trade_model == "RSI":
+                    col1, col2, col3 , col4, col5, col6, col7 = st.columns([3,2, 2, 2, 2, 2, 4])
+                    with col1:
+                        rsi_buy_ticker = st.selectbox("(rsi)Select a Ticker", options=list(rsi_candidates.keys()), format_func=format_func_rsi)
+                    with col2:
+                        rsi_buy_granularity = option = st.selectbox( 'Granularity:', ('1 day', "1 hr", "15min", '5min'), index=0)
+                    with col3:
+                        rsi_buy_rsi = st.number_input("When RSI Reaches:", min_value=1, max_value=100, value=30)
+                    with col4:
+                        rsi_buy_amount = st.number_input("Amount to allocate:", min_value=1, max_value=100000)
+                    with col5:
+                        rsi_buy_order_type = st.selectbox(
+                            'Order Type:', ('Day', 'Good Till Cancel', "Market Order"))
+                    btn_buy_rsi = st.button("Submit Alpaca Order RSI -- Buy")
+                else: #ARIMA
+                    col1, col2 = st.columns([4, 12])
+                    with col1:
+                        arima_buy_ticker = st.selectbox("(arima)Select a Ticker", \
+                                options=list(arima_candidates.keys()), format_func=format_func_arima)
 
-                df_arima_forecast = arima_forecast(ticker=predict_ticker)
+                    col1, col2, col3, col4 , col5 = st.columns([3, 3, 3, 3, 6])
+                    with col1:
+                        arima_buy_price = st.number_input("Target Price (or below):")
+                    with col2:
+                        arima_buy_granularity = option = st.selectbox( 'Granularity:', ('1 day', "1 hr", "15min", '5min'), index=0)
+                    with col3:
+                        arima_buy_amount = st.number_input("Amount to allocate:", min_value=1, max_value=100000)
+                    with col4:
+                        arima_buy_order_type = option = st.selectbox(
+                            'Order Type:', ('Day', 'Good Till Cancel', "Market Order"))
+                    df_arima_forecast = arima_forecast(
+                        ticker=arima_buy_ticker,
+                        interval = arima_buy_granularity,
+                        API_KEY=st.session_state.API_KEY,
+                        API_SECRET=st.session_state.API_SECRET,
+                        END_POINT=st.session_state.END_POINT )
+                    st.markdown("<font><b>Forecast for next 5 closing prices</b></font>", unsafe_allow_html=True)
+                    st.dataframe(df_arima_forecast)
+                    btn_buy_arima = st.button("Submit Alpaca Order ARIMA -- Buy")
 
-                st.markdown("<font><b>Forecast for next 5 days of closing price</b></font>", unsafe_allow_html=True)
-                st.dataframe(df_arima_forecast)
+            else: # alpaca_action == "Sell":
+                trade_model = st.radio( "Model", ('RSI', 'ARIMA'), index=0, horizontal =True)
+                if trade_model == "RSI":
+                    col1, col2, col3 , col4, col5, col6, col7 = st.columns([3,2, 2, 2, 2, 2, 4])
+                    with col1:
+                        rsi_sell_ticker = st.selectbox("(rsi)Select a Ticker", options=list(rsi_candidates.keys()), format_func=format_func_rsi)
+                    with col2:
+                        rsi_sell_granularity = st.selectbox( 'Granularity:', ('1 day', "1 hr", "15min", '5min'), index=0)
+                    with col3:
+                        rsi_sell_rsi = st.number_input("When RSI Reaches:", min_value=1, max_value=100, value=70)
+                    with col4:
+                        rsi_sell_shares = st.number_input("Shares to Sell:", min_value=1, max_value=100000)
+                    with col5:
+                        rsi_sell_order_type = st.selectbox(
+                            'Order Type:', ('Day', 'Good Till Cancel', "Market Order"))
+                    btn_sell_rsi = st.button("Submit Alpaca Order RSI -- Sell")
+                else: #ARIMA
+                    col1, col2 = st.columns([4, 12])
+                    with col1:
+                        arima_sell_ticker  = st.selectbox("(arima)Select a Ticker", \
+                            options=list(arima_candidates.keys()), format_func=format_func_arima)
 
-                col1, col2, col3, col4 = st.columns([3, 3, 3, 6])
-                with col1:
-                    st.number_input("Target Price (or below):")
-                with col2:
-                    st.number_input("Amount to allocate:", min_value=1, max_value=100000)
-                with col3:
-                    option = st.selectbox(
-                        'Order Type:', ('Day', 'Good Till Cancel', "Market Order"))
-                btn_buy_rsi = st.button("Submit Alpaca Order ARIMA -- Buy")
-        else: # alpaca_action == "Sell":
-            # choose Strateby
-            trade_model = st.radio( "Model", ('RSI', 'ARIMA'), index=0, horizontal =True)
-            if trade_model == "RSI":
-                col1, col2, col3 , col4, col5, col6 = st.columns([5, 2, 2, 2, 2, 4])
-                with col1:
-                    st.selectbox("Select a Ticker", options=list(rsi_candidates.keys()), format_func=format_func)
-                with col2:
-                    st.number_input("When RSI Reaches:", min_value=1, max_value=100)
-                with col3:
-                    st.number_input("Shares to Sell:", min_value=1, max_value=100000)
-                with col4:
-                    option = st.selectbox(
-                        'Order Type:', ('Day', 'Good Till Cancel', "Market Order"))
-                btn_buy_rsi = st.button("Submit Alpaca Order RSI -- Sell")
-            else: #ARIMA
-                col1, col2 = st.columns([4, 12])
-                with col1:
-                    predict_ticker = st.selectbox("Select a Ticker", options=list(arima_candidates.keys()), format_func=format_func)
+                    st.markdown("<font><b>Forecast for next 5 closing prices</b></font>", unsafe_allow_html=True)
+                    #st.dataframe(df_arima_forecast)
 
-                df_arima_forecast = arima_forecast(ticker=predict_ticker)
+                    col1, col2, col3, col4 , col5 = st.columns([3, 3, 3, 3, 6])
+                    with col1:
+                        arima_sell_price = st.number_input("Target Price (or above):")
+                    with col2:
+                        arima_sell_granularity = st.selectbox( 'Granularity:', ('1 day', "1 hr", "15min", '5min'), index=0)
+                    with col3:
+                        arima_sell_shares = st.number_input("Shares to Sell:", min_value=1, max_value=100000)
+                    with col4:
+                        arima_sell_order_type = st.selectbox(
+                            'Order Type:', ('Day', 'Good Till Cancel', "Market Order"))
 
-                st.markdown("<font><b>Forecast for next 5 days of closing price</b></font>", unsafe_allow_html=True)
-                st.dataframe(df_arima_forecast)
+                    df_arima_forecast = arima_forecast(
+                        ticker=arima_sell_ticker,
+                        interval = arima_sell_granularity,
+                        API_KEY=st.session_state.API_KEY,
+                        API_SECRET=st.session_state.API_SECRET,
+                        END_POINT=st.session_state.END_POINT )
+                    st.markdown("<font><b>Forecast for next 5 closing prices</b></font>", unsafe_allow_html=True)
+                    st.dataframe(df_arima_forecast)
 
-                col1, col2, col3, col4 = st.columns([3, 3, 3, 6])
-                with col1:
-                    st.number_input("Target Price (or above):")
-                with col2:
-                    st.number_input("Shares to Sell:", min_value=1, max_value=100000)
-                with col3:
-                    option = st.selectbox(
-                        'Order Type:', ('Day', 'Good Till Cancel', "Market Order"))
-                btn_buy_rsi = st.button("Submit Alpaca Order ARIMA - Sell")
+                    btn_sell_arima = st.button("Submit Alpaca Order ARIMA - Sell")
 
 
-######################################################## Trading Zone ########################################################
+######################################################## Alpaca Keys  ########################################################
 with tabs[5]:
     st.markdown("#### Load alpaca api key and secret.")
 

@@ -20,6 +20,7 @@ from plotly.subplots import make_subplots
 #Scikit-Learn for Modeling
 from sklearn.metrics import mean_squared_error,r2_score, mean_absolute_error,mean_squared_log_error
 
+import alpaca_trade_api as alpaca
 
 from statsmodels.tsa.stattools import adfuller
 from statsmodels.tsa.seasonal import seasonal_decompose
@@ -69,7 +70,6 @@ def plot_stock(ticker, interval, N_ticks=40):
 
     plt.legend()
     plt.show()
-
 
 def test_stationarity(ticker, interval, price_type, N_ticks=30, plot_percentage_change=True):
     """_summary_
@@ -449,16 +449,30 @@ def train_autoarima_for_batch(ticker,
 def arima_forecast(ticker,
                      interval='1d',
                      price_type="Close",
-                     plot_percentage_change=True,
+                     plot_percentage_change=False,
                      test_size=0.2,
-                     predict_n = 5):
-    return [34, 43, 34, 33, 32]
-    # fc = train_autoarimma('NWL', '1d', 'Close', plot_percentage_change=False)
-    # #show_train_test('NWL', '1d', 'Close')
-    # #check_trend_seasonality('NWL', '1d', 'Close')
-    # #test_stationarity('NWL', '1d', 'Close')
-    # # print('adffff')
-    # forecast, test,  order, test2 = train_autoarima_for_batch('NWL', '1d', 'Close', plot_percentage_change=False)
+                     predict_n=5,
+                     API_KEY=None,
+                     API_SECRET=None,
+                     END_POINT=None,
+                     data_points = 250 ):
+    """_summary_
+    output: next predict_n interval's data
+    input: ticker, interval, pricetype, etc.
+    output: predict_n predictions
+    note: use alpaca to get data. make sure data format matches
 
-    # print(order)
-    # print('dafd')
+    Args:
+        ticker (_type_): _description_
+        interval (str, optional): _description_. Defaults to '1d'.
+        price_type (str, optional): _description_. Defaults to "Close".
+        plot_percentage_change (bool, optional): _description_. Defaults to True.
+        test_size (float, optional): _description_. Defaults to 0.2.
+        predict_n (int, optional): _description_. Defaults to 5.
+    """
+    return pd.DataFrame({"Time": [], "Price": []})
+    # if not END_POINT:
+    #     END_POINT = 'https://paper-api.alpaca.markets'
+    # api = alpaca.REST(API_KEY, API_SECRET, END_POINT)
+    # stock_data = api.get_bars(ticker, timeframe = time_frame, start  = from_time,
+    # end = to_time,  limit=100).df
