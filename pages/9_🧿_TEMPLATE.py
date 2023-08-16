@@ -8,24 +8,25 @@ from datetime import datetime, timedelta
 import alpaca_trade_api as alpaca
 import plotly.graph_objects as go
 import matplotlib.pyplot as plt
+import asyncio
+
 plt.rcParams.update({'font.size': 8})
 
 st.set_page_config(page_title= "Camp 2: In Action", page_icon = "🔢", layout="wide")
-
-# data source: stockai/data
-#scripts folder: stockai/scripts_xx. here stockai/scripts_template
 
 PROJECT_PATH = os.getcwd()
 DATA_PATH = f"{PROJECT_PATH}/data"
 SCRIPTS_PATH = f"{PROJECT_PATH}/scripts_template"
 sys.path.append(PROJECT_PATH)
 
+from alpaca.trading.client import TradingClient
+import alpaca_trade_api as tradeapi
+
 from scripts_template.generate_ticker_list import choose_and_save_my_list, get_ticker_list
 from scripts_template.get_histories import download_histories, get_one_ticker_df
 
 from scripts_template.ticker_eda import visualize_sma_one_ticker, visualize_ewm_one_ticker
 from scripts_template.rs_rsi import plot_RSI, plot_RSI_streamlit
-
 from scripts_template.trade_rsi_strategy import plot_trading_points, create_plot_position
 
 from scripts_template.auto_arima import (
@@ -38,7 +39,7 @@ from scripts_template.auto_arima import (
 
 from scripts_template.model_training import load_performance, rsi_model, arima_model, get_candidates
 
-from scripts_template.trade_alpaca import get_balance, get_positions, get_pending_orders
+from scripts_template.alpaca_actions_simple import get_account, get_positions,  submit_alpaca_order_simple, get_rsi, get_arima
 ############################# Pay layout ################################################
 st.markdown("""
     <style>
@@ -66,9 +67,9 @@ st.title(f"🔢 Template's StockAI Project")
 listTabs =["🧑‍🏭Data Exploration",
            "🧑‍🎓Trade Strategies RSI",
            "🧿Trade Strategies ARIMA",
-           "📈 Model Training",
-           "🔢 Trading Zone",
-           "📚 Alpaca Keys", "        "]
+           "📈Model Training",
+           "🔢Trading Zone",
+           "📚Alpaca Keys", "        "]
 
 whitespace = 9
 ## Fills and centers each tab label with em-spaces
@@ -78,6 +79,18 @@ tabs = st.tabs([s.center(whitespace,"\u2001") for s in listTabs])
 stock_tickers = get_ticker_list()
 intervals = ['1d', '1m', '5m']
 prices = ["Open", "High", "Low", "Close"]
+
+
+@st.cache_data
+def get_tradeclient_api():
+    API_KEY = st.session_state["TEMPLATE_API_KEY"]
+    SECRET_KEY = st.session_state["TEMPLATE_API_SECRET"]
+    END_POINT = st.session_state["TEMPLATE_END_POINT"]
+
+    trading_client = TradingClient(API_KEY, SECRET_KEY, paper=True)
+    api =  tradeapi.REST(API_KEY,SECRET_KEY, END_POINT)
+
+    return trading_client, api
 
 ######################################################## Data Exploration and Analysis ########################################################
 with tabs[0]:
@@ -263,7 +276,7 @@ with tabs[3]:
     st.markdown("<font size=4><b>Positioning, Model Training And Ranking</b></font><font size=3>", unsafe_allow_html=True)
     st.markdown("<font size=3><b>RSI Ranking By Performance</b></font>", unsafe_allow_html=True)
 
-    @st.cache_data
+    #@st.cache_data
     def load_():
         return load_performance("RSI"), load_performance("ARIMA")
 
@@ -312,153 +325,109 @@ with tabs[3]:
 with tabs[4]:
     st.markdown("<font size=5><b>Positions and Trading Zone. </b></font><font size=3> <font size=3><b>Paper Money Only</b></font>", unsafe_allow_html=True)
 
-    portfolio, cashbalance = get_balance()
-    df_positions = get_positions()
-
-    col1, col2, col3 , col4, col5 = st.columns([4,4,2,2,8])
-    with col1:
-        st.markdown(f"Your Overall Portfolios: <font color=blue><b>{portfolio} </b></font>", unsafe_allow_html=True)
-    with col2:
-        st.markdown(f"Available Funding for Buy: <font color=blue><b>{cashbalance} </b></font>", unsafe_allow_html=True)
-
     st.markdown(f"### Action")
-    alpaca_action = st.radio( "Action", ('Buy', 'Sell', 'Check Portfolios', 'Cancel An Order'), index=2, horizontal =True)
+    alpaca_action = st.radio( "Action", ('Buy', 'Sell'), index=1, horizontal =True)
 
-    @st.cache_data
-    def get_performance_ranking_list():
-        rsi_candidates, arima_candidates = get_candidates()
-        return rsi_candidates, arima_candidates
-
-    @st.cache_data
-    def get_pending():
-        buying, selling = get_pending_orders( )
-        return buying, selling
-
-    def format_func_rsi(option):
-            return rsi_candidates[option]
-    def format_func_arima(option):
-            return arima_candidates[option]
-
-    if alpaca_action == "Check Portfolios":
-        st.markdown(f"### My Positions in Alpaca")
-        st.dataframe(df_positions)
-
-        buying, selling = get_pending()
-        st.markdown(f"#### Buying Orders Alpaca")
-        st.dataframe(buying)
-
-        st.markdown(f"#### Selling Orders in Alpaca")
-        st.dataframe(selling)
-    elif alpaca_action == "Cancel An Order":
-        buying, selling = get_pending()
-        st.markdown(f"#### Buying Orders Alpaca")
-        st.dataframe(buying)
-
-        st.markdown(f"#### Selling Orders in Alpaca")
-        st.dataframe(selling)
-
-        col1, col2, col3 = st.columns([2, 2, 8])
-        with col1:
-            order_cancel = st.text_input("Enter an Order to Cancel", value="")
-        with col2:
-            st.markdown("")
-            st.markdown("")
-            btn_cancel_order = st.button("Submit an Order Cancellation Request")
-
+    if "TEMPLATE_API_KEY" not in st.session_state:
+        st.warning(f"### Alpaca Paper Trade API KEY not available. Please load keys to proceed")
     else:
-        if "API_KEY" not in st.session_state:
-            st.warning(f"### Alpaca Paper Trade API KEY not available. Please load keys to proceed")
-        else:
-            rsi_candidates, arima_candidates = get_performance_ranking_list()
-            if alpaca_action == "Buy":
-                # choose Strateby
-                trade_model = st.radio( "Model", ('RSI', 'ARIMA'), index=0, horizontal =True)
-                if trade_model == "RSI":
-                    col1, col2, col3 , col4, col5, col6, col7 = st.columns([3,2, 2, 2, 2, 2, 4])
-                    with col1:
-                        rsi_buy_ticker = st.selectbox("(rsi)Select a Ticker", options=list(rsi_candidates.keys()), format_func=format_func_rsi)
-                    with col2:
-                        rsi_buy_granularity = option = st.selectbox( 'Granularity:', ('1 day', "1 hr", "15min", '5min'), index=0)
-                    with col3:
-                        rsi_buy_rsi = st.number_input("When RSI Reaches:", min_value=1, max_value=100, value=30)
-                    with col4:
-                        rsi_buy_amount = st.number_input("Amount to allocate:", min_value=1, max_value=100000)
-                    with col5:
-                        rsi_buy_order_type = st.selectbox(
-                            'Order Type:', ('Day', 'Good Till Cancel', "Market Order"))
-                    btn_buy_rsi = st.button("Submit Alpaca Order RSI -- Buy")
-                else: #ARIMA
-                    col1, col2 = st.columns([4, 12])
-                    with col1:
-                        arima_buy_ticker = st.selectbox("(arima)Select a Ticker", \
-                                options=list(arima_candidates.keys()), format_func=format_func_arima)
 
-                    col1, col2, col3, col4 , col5 = st.columns([3, 3, 3, 3, 6])
-                    with col1:
-                        arima_buy_price = st.number_input("Target Price (or below):")
-                    with col2:
-                        arima_buy_granularity = option = st.selectbox( 'Granularity:', ('1 day', "1 hr", "15min", '5min'), index=0)
-                    with col3:
-                        arima_buy_amount = st.number_input("Amount to allocate:", min_value=1, max_value=100000)
-                    with col4:
-                        arima_buy_order_type = option = st.selectbox(
-                            'Order Type:', ('Day', 'Good Till Cancel', "Market Order"))
-                    df_arima_forecast = arima_forecast(
-                        ticker=arima_buy_ticker,
-                        interval = arima_buy_granularity,
-                        API_KEY=st.session_state.API_KEY,
-                        API_SECRET=st.session_state.API_SECRET,
-                        END_POINT=st.session_state.END_POINT )
-                    st.markdown("<font><b>Forecast for next 5 closing prices</b></font>", unsafe_allow_html=True)
-                    st.dataframe(df_arima_forecast)
-                    btn_buy_arima = st.button("Submit Alpaca Order ARIMA -- Buy")
+        def format_func_rsi(option):
+                return rsi_candidates[option]
+        def format_func_arima(option):
+                return arima_candidates[option]
 
-            else: # alpaca_action == "Sell":
-                trade_model = st.radio( "Model", ('RSI', 'ARIMA'), index=0, horizontal =True)
-                if trade_model == "RSI":
-                    col1, col2, col3 , col4, col5, col6, col7 = st.columns([3,2, 2, 2, 2, 2, 4])
-                    with col1:
-                        rsi_sell_ticker = st.selectbox("(rsi)Select a Ticker", options=list(rsi_candidates.keys()), format_func=format_func_rsi)
-                    with col2:
-                        rsi_sell_granularity = st.selectbox( 'Granularity:', ('1 day', "1 hr", "15min", '5min'), index=0)
-                    with col3:
-                        rsi_sell_rsi = st.number_input("When RSI Reaches:", min_value=1, max_value=100, value=70)
-                    with col4:
-                        rsi_sell_shares = st.number_input("Shares to Sell:", min_value=1, max_value=100000)
-                    with col5:
-                        rsi_sell_order_type = st.selectbox(
-                            'Order Type:', ('Day', 'Good Till Cancel', "Market Order"))
-                    btn_sell_rsi = st.button("Submit Alpaca Order RSI -- Sell")
-                else: #ARIMA
-                    col1, col2 = st.columns([4, 12])
-                    with col1:
-                        arima_sell_ticker  = st.selectbox("(arima)Select a Ticker", \
-                            options=list(arima_candidates.keys()), format_func=format_func_arima)
+        def transpose_ref_data(model_, ref_data):
+            N = len(ref_data)
+            if model_ == "RSI": #
+                cols = [f"RSI_{N-i-1}" for i in range(N) ]
+            else:
+                cols = [f"Price_{1+i}" for i in range(N) ]
+            ref_data = {c:['{:.2f}'.format(d)] for c, d in zip(cols, ref_data)}
 
-                    st.markdown("<font><b>Forecast for next 5 closing prices</b></font>", unsafe_allow_html=True)
-                    #st.dataframe(df_arima_forecast)
 
-                    col1, col2, col3, col4 , col5 = st.columns([3, 3, 3, 3, 6])
-                    with col1:
-                        arima_sell_price = st.number_input("Target Price (or above):")
-                    with col2:
-                        arima_sell_granularity = st.selectbox( 'Granularity:', ('1 day', "1 hr", "15min", '5min'), index=0)
-                    with col3:
-                        arima_sell_shares = st.number_input("Shares to Sell:", min_value=1, max_value=100000)
-                    with col4:
-                        arima_sell_order_type = st.selectbox(
-                            'Order Type:', ('Day', 'Good Till Cancel', "Market Order"))
 
-                    df_arima_forecast = arima_forecast(
-                        ticker=arima_sell_ticker,
-                        interval = arima_sell_granularity,
-                        API_KEY=st.session_state.API_KEY,
-                        API_SECRET=st.session_state.API_SECRET,
-                        END_POINT=st.session_state.END_POINT )
-                    st.markdown("<font><b>Forecast for next 5 closing prices</b></font>", unsafe_allow_html=True)
-                    st.dataframe(df_arima_forecast)
+            return pd.DataFrame(ref_data)
 
-                    btn_sell_arima = st.button("Submit Alpaca Order ARIMA - Sell")
+        trading_client, api = get_tradeclient_api()
+
+        _, portfolio, cashbalance = get_account(trading_client=trading_client)
+
+        col1, col2, col3 , col4, col5 = st.columns([4,4,2,2,8])
+        with col1:
+            st.markdown(f"Your Overall Portfolios: <font color=blue><b>{portfolio} </b></font>", unsafe_allow_html=True)
+        with col2:
+            st.markdown(f"Available Funding for Buy: <font color=blue><b>{cashbalance} </b></font>", unsafe_allow_html=True)
+
+        @st.cache_data
+        def get_performance_ranking_list():
+            rsi_candidates, arima_candidates = get_candidates()
+            return rsi_candidates, arima_candidates
+
+        rsi_candidates, arima_candidates = get_performance_ranking_list()
+
+        col1, col2, col3 , col4, col5 = st.columns([2,2,4,4, 6])
+        with col1:
+            model_ = st.selectbox("Model Type", options=("RSI","ARIMA"), index=0)
+        with col2:
+            granularity_ =  st.selectbox( 'Model Granularity:', ('1 day', "1 hour", "15 min", '5 min'), index=0)
+        with col3:
+            ticker_ = ""
+            if model_ == "RSI":
+                ticker_ = st.selectbox("(RSI)Select a Ticker", options=list(rsi_candidates.keys()), format_func=format_func_rsi)
+            else:
+                ticker_ = st.selectbox("(ARIMA)Select a Ticker", \
+                        options=list(arima_candidates.keys()), format_func=format_func_arima)
+        with col4:
+            order_type_ = st.selectbox("Buy Order Type", options=("Limit", "Market"), index=1)
+
+        ref =   "Recent RSI Readings" if model_=="RSI" else "Predictions (if forecast is -1, it means not enough data for forecasting)"
+        btn_ref = st.button(f"Load {ref}")
+
+        if btn_ref:
+            if model_ == "RSI":
+                ref_data_  = get_rsi(api, ticker_, interval, price_type='Close', span=14, min_periods = 3, recent_n = 5 )
+            else:
+                ref_data_ = get_arima(api, ticker_, interval, price_type='Close', plot_percentage_change=False,predict_n=5)
+            df_ref_ = transpose_ref_data(model_, ref_data_)
+            st.session_state["df_ref_"] = df_ref_
+
+        if "df_ref_" in st.session_state:
+            st.markdown(f"#### {ref}")
+            df_ref_ = st.session_state["df_ref_"]
+            st.write(df_ref_)
+
+        st.markdown(f"#### Place Order: ")
+        col1, col2, col3, col4  = st.columns([2,2,3,10])
+        with col1:
+            price_ = st.number_input(f"{alpaca_action} Price", min_value=0.0, value=0.00, step=0.01, max_value=10000.0)
+        with col2:
+            shares_ = st.number_input( "Shares", min_value=0, value=0, max_value=100000)
+        with col3:
+            st.markdown("")
+            st.markdown("")
+            bt_place_order = st.button("Place Simple Order")
+
+        if bt_place_order:
+            status, order_msg = submit_alpaca_order_simple(
+                    trading_client = trading_client,
+                    api = api,
+                    model = model_,
+                    action = alpaca_action,
+                    interval = granularity_,
+                    ticker = ticker_,
+                    order_type = order_type_,
+                    order_valid = "Limit",
+                    amount = 0,
+                    rsi = 0,
+                    price = price_,
+                    shares = shares_
+                )
+            if status == 0:
+                st.success(order_msg)
+            else:
+                st.warning(order_msg)
+
 
 
 ######################################################## Alpaca Keys  ########################################################
@@ -467,12 +436,13 @@ with tabs[5]:
 
     # st.session_state.update(st.session_state) # only need when run in cloud
 
-    if "API_KEY" in st.session_state:
+    if "TEMPLATE_API_KEY" in st.session_state:
         st.markdown("alpaca api key and secret have already been loaded")
         reload = st.button("re-load/refresh api key/secret")
         if reload:
-            del st.session_state["API_KEY"]
-            del st.session_state["API_SECRET"]
+            del st.session_state["TEMPLATE_API_KEY"]
+            del st.session_state["TEMPLATE_API_SECRET"]
+            del st.session_state["TEMPLATE_END_POINT"]
     else:
         col1, col2 = st.columns([3, 5])
         with col1:
@@ -481,17 +451,17 @@ with tabs[5]:
             key_file_json = json.load(key_file)
 
             has_all_info = 0
-            if "API_KEY" in key_file_json:
-                API_KEY = key_file_json["API_KEY"]
-                st.session_state.API_KEY = API_KEY
+            if "TEMPLATE_API_KEY" in key_file_json:
+                API_KEY = key_file_json["TEMPLATE_API_KEY"]
+                st.session_state.TEMPLATE_API_KEY = API_KEY
                 has_all_info += 1
-            if "API_SECRET" in key_file_json:
-                API_SECRET = key_file_json["API_SECRET"]
-                st.session_state.API_SECRET = API_SECRET
+            if "TEMPLATE_API_SECRET" in key_file_json:
+                API_SECRET = key_file_json["TEMPLATE_API_SECRET"]
+                st.session_state.TEMPLATE_API_SECRET = API_SECRET
                 has_all_info += 1
-            if "END_POINT" in key_file_json:
-                END_POINT = key_file_json["END_POINT"]
-                st.session_state.END_POINT = END_POINT
+            if "TEMPLATE_END_POINT" in key_file_json:
+                END_POINT = key_file_json["TEMPLATE_END_POINT"]
+                st.session_state.TEMPLATE_END_POINT = END_POINT
                 has_all_info += 1
 
             if has_all_info == 3:
@@ -503,3 +473,8 @@ with tabs[5]:
                 st.markdown(f"END_POINT --- {END_POINT}")
             else:
                 st.warning('Wrong alpaca secret file or format incorrect', icon="⚠️")
+
+    # ##### async running to execute RSI order submit
+    # async def execution_orders():
+    #     await asyncio.sleep(300)  # execute once every 5 minutes
+    #     alpaca_order_execution()

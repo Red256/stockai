@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt
 from matplotlib.pylab import rcParams
 import seaborn as sns
 import random
+from copy import deepcopy
 
 #Plotting and
 import plotly.express as px
@@ -21,6 +22,8 @@ from plotly.subplots import make_subplots
 from sklearn.metrics import mean_squared_error,r2_score, mean_absolute_error,mean_squared_log_error
 
 import alpaca_trade_api as alpaca
+from alpaca.trading.client import TradingClient
+from alpaca.trading.requests import GetAssetsRequest
 
 from statsmodels.tsa.stattools import adfuller
 from statsmodels.tsa.seasonal import seasonal_decompose
@@ -39,6 +42,7 @@ sys.path.append(PROJECT_PATH)
 
 from scripts_template.generate_ticker_list import choose_and_save_my_list, get_ticker_list
 from scripts_template.get_histories import download_histories, get_one_ticker_df
+
 
 # plot a stock's OHLC chart
 def plot_stock(ticker, interval, N_ticks=40):
@@ -145,7 +149,6 @@ def test_stationarity(ticker, interval, price_type, N_ticks=30, plot_percentage_
 
 #########################################################################
 
-# # Checking Trend and Seasonality
 def check_trend_seasonality(ticker, interval, price_type, N_ticks=30, plot_percentage_change=True):
     """_summary_
     goal: standard way of check stationarity, trend, cyclical of a time series
@@ -288,7 +291,7 @@ def train_autoarima(ticker,
                           error_action='ignore',
                           suppress_warnings=True,
                           stepwise=True)
-    #print(model_autoARIMA.summary())
+
     model_autoARIMA.plot_diagnostics(figsize=(15,8))
 
     ## get the orders
@@ -407,14 +410,20 @@ def train_autoarima_for_batch(ticker,
 
     # now use ARIMA model to fit
     ######################## forecast use ARIMA. Feed with stationary data
-    series_  = df_[plot_col]
-    while d > 0:
-        #series_ = np.diff(series_, n=1)
-        series_ = series_.diff(1)
-        d -= 1
+    for i in range(1, d+1):
+        if i == 1:
+            df_[f"{plot_col}{i}"] = df_[plot_col].diff(1)
+        else:
+            df_[f"{plot_col}{i}"] = df_[f"{plot_col}{i-1}"].diff(1)
+
 
     # split again train arima model with order. if d>0, both train and test data have been differenced
     index_train_end = int(len(df_)*(1- test_size))-1
+
+    if d > 0:
+        series_ = df_[f"{plot_col}{d}"]
+    else:
+        series_ = df_[plot_col]
 
     train, test = series_[0:index_train_end], series_[index_train_end:index_train_end+predict_n]
     model = ARIMA(train, order=order)
@@ -423,39 +432,30 @@ def train_autoarima_for_batch(ticker,
     forecast_values = fitted.get_forecast(steps=predict_n, alpha=0.05)
 
     fc_mean = forecast_values.predicted_mean
-    n_len = len(test.index)
-    lower_series = forecast_values.conf_int()[f'lower {plot_col}'][:n_len]
-    upper_series = forecast_values.conf_int()[f'upper {plot_col}'][:n_len]
+    #n_len = len(test.index)
+    # lower_series = forecast_values.conf_int()[f'lower {plot_col}'][:n_len]
+    # upper_series = forecast_values.conf_int()[f'upper {plot_col}'][:n_len]
 
-    n_len = len(test.index)
-    fc_series_2 = fc_mean[:n_len]
-    fc_series_2.index = test.index
-    lower_series.index = test.index
-    upper_series.index = test.index
+    #n_len = len(test.index)
+    # fc_series_2 = fc_mean[:n_len]
+    # fc_series_2.index = test.index
+    # lower_series.index = test.index
+    # upper_series.index = test.index
 
-    # restore. only need to restore d
-    original_series =  df_[plot_col][index_train_end:index_train_end+predict_n]
-    forecast_diff_diff = fc_mean
     _, d, _ = order
-    forecast = original_series
-    while d>0:
-        # First step of inverting the differencing: Undo the first differencing
-        forecast_diff = np.cumsum(forecast_diff_diff) + original_series[-d] - original_series[-d-1]
-        d -= 1
-        # Second step of inverting the differencing: Undo the second differencing
-        forecast = np.cumsum(forecast_diff) + original_series[-d]
+    last_row = [df_[f"{plot_col}"][-1]]
+    for i in range(1, d+1):
+        last_row.append(df_[f"{plot_col}{i}"][-1])
+
+    forecast = restore_forecast_(d, fc_mean, last_row )
+
     return forecast, test[:predict_n],  order, df_[plot_col][index_train_end: index_train_end+predict_n]
 
-def arima_forecast(ticker,
-                     interval='1d',
+
+def arima_forecast(df, # stock data
                      price_type="Close",
                      plot_percentage_change=False,
-                     test_size=0.2,
-                     predict_n=5,
-                     API_KEY=None,
-                     API_SECRET=None,
-                     END_POINT=None,
-                     data_points = 250 ):
+                     predict_n=5  ):
     """_summary_
     output: next predict_n interval's data
     input: ticker, interval, pricetype, etc.
@@ -469,10 +469,87 @@ def arima_forecast(ticker,
         plot_percentage_change (bool, optional): _description_. Defaults to True.
         test_size (float, optional): _description_. Defaults to 0.2.
         predict_n (int, optional): _description_. Defaults to 5.
+
+    Note: make sure Date is not index for df
     """
-    return pd.DataFrame({"Time": [], "Price": []})
-    # if not END_POINT:
-    #     END_POINT = 'https://paper-api.alpaca.markets'
-    # api = alpaca.REST(API_KEY, API_SECRET, END_POINT)
-    # stock_data = api.get_bars(ticker, timeframe = time_frame, start  = from_time,
-    # end = to_time,  limit=100).df
+    df = df.set_index('Date')
+    df.dropna(inplace=True)
+    plot_col = price_type
+    if plot_percentage_change:
+        df[f'{price_type}_Per'] = df[price_type].pct_change(1)*100
+        plot_col = f'{price_type}_Per'
+
+    ### step 1: use auto arima to get p, d, q  and series summaries
+    df[plot_col] = df[plot_col].fillna(method='bfill')
+
+
+    model_autoARIMA = auto_arima(df[plot_col], start_p=0, start_q=0,
+                          test='adf',       # use adftest to find optimal 'd'
+                          max_p=3, max_q=3, # maximum p and q
+                          m=1,              # frequency of series
+                          d=None,           # let model determine 'd'
+                          seasonal=False,   # No Seasonality
+                          start_P=0,
+                          D=0,
+                          trace=False,
+                          error_action='ignore',
+                          suppress_warnings=True,
+                          stepwise=True)
+    order = model_autoARIMA.order
+
+    _,d,_ = order
+
+    for i in range(1, d+1):
+        if i == 1:
+            df[f"{plot_col}{i}"] = df[plot_col].diff(1)
+        else:
+            df[f"{plot_col}{i}"] = df[f"{plot_col}{i-1}"].diff(1)
+
+    if d == 0:
+        model = ARIMA(df[plot_col], order=order)
+    else:
+        model = ARIMA(df[f"{plot_col}{d}"], order=order)
+
+    fitted = model.fit()
+    forecast_values = fitted.get_forecast(steps=predict_n, alpha=0.05)
+    fc_mean = forecast_values.predicted_mean
+
+    forecast_diff_diff = fc_mean
+    _, d, _ = order
+
+    last_row = [df[f"{plot_col}"][-1]]
+    for i in range(1, d+1):
+        last_row.append(df[f"{plot_col}{i}"][-1])
+
+    forecasts = restore_forecast_(d,fc_mean, last_row )
+
+    return forecasts
+
+def restore_forecast_(d ,fc_mean, last_row):
+    """_summary_
+    d: difference. not used. the dim of last row
+    fc_mean: forecast
+    last_row: last row actual data
+
+    Args:
+        d (_type_): _description_
+        fc_mean (_type_): _description_
+        last_row (_type_): _description_
+    """
+    last_row = list(reversed(last_row))
+
+    values = []
+    values.append(last_row)
+
+    for f in fc_mean:
+        row = [f]
+        for v in last_row[1:]:
+            value = f + v
+            row.append(value)
+            f = value
+        values.append(row)
+        last_row = row
+
+    forecasts = [v[-1] for v in values]
+
+    return forecasts[1:]

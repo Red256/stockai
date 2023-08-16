@@ -1,0 +1,10 @@
+https://alpaca.markets/docs/trading/getting_started/
+
+
+order: submit etc
+https://alpaca.markets/docs/trading/getting_started/how-to-orders/
+
+#get data parameter formats:
+https://alpaca.markets/docs/api-references/market-data-api/stock-pricing-data/historical/
+
+59Min, 23Hour, 1Day, 1Week, 12Month

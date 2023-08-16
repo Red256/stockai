@@ -1,51 +1,51 @@
 ,Ticker,industry,sector,averageVolume,averageVolume10days,marketCap
-288,CHE,Medical Care Facilities,Healthcare,65695,77660,8093870080
-2455,MTAC,Shell Companies,Financial Services,2731,2860,77645296
-326,CL,Household & Personal Products,Consumer Defensive,5338791,5187200,63992877056
-543,FROG,Software—Application,Technology,888119,967220,2764112896
-451,EMN,Specialty Chemicals,Basic Materials,909416,800350,10218475520
-837,INDI,Semiconductor Equipment & Materials,Technology,2109745,2246350,1337109888
-3412,QNRX,Biotechnology,Healthcare,252916,540790,5828527
-3059,DXYN,Textile Manufacturing,Consumer Cyclical,38055,25060,20174700
-347,CNX,Oil & Gas E&P,Energy,2805881,2121540,2948908544
-2419,BCLI,Biotechnology,Healthcare,257736,254900,81969888
-351,TCS,Specialty Retail,Consumer Cyclical,689565,1005690,164813872
-2831,MGRM,Medical Devices,Healthcare,451500,58940,114087872
-1804,TALK,Health Information Services,Healthcare,552667,525050,209484800
-725,HLMN,Tools & Accessories,Industrials,1473140,1931820,1759364736
-623,NUVL,Biotechnology,Healthcare,298539,346960,2373972992
-694,IDT,Telecom Services,Communication Services,93496,125690,664178624
-654,GOGO,Telecom Services,Communication Services,514695,624750,2178246912
-1459,KRT,Packaging & Containers,Consumer Cyclical,33068,29330,367918752
-521,SSRM,Gold,Basic Materials,1522613,1149020,2957639168
-225,HSIC,Medical Distribution,Healthcare,852580,855840,10416049152
-1207,PFC,Banks—Regional,Financial Services,166339,226080,585230784
-1236,ZYME,Biotechnology,Healthcare,603573,1229120,550589760
-1223,SPE,Asset Management,Financial Services,21029,20670,129761160
-2435,QUBT,Computer Hardware,Technology,1327701,1539720,79965728
-1362,HDSN,Specialty Chemicals,Basic Materials,489977,538180,441956768
+1403,SRRK,Biotechnology,Healthcare,343314,847950,401212704
+1109,PPT,Asset Management,Financial Services,203408,255160,346034272
+2341,SLNG,Oil & Gas Integrated,Energy,6145,4920,93687520
+2247,NKTX,Biotechnology,Healthcare,391673,851990,106678088
+248,CPE,Oil & Gas E&P,Energy,1440852,1643990,2174723584
+3160,WAVE,Utilities—Renewable,Utilities,193990,1150170,14650311
+979,OXY,Oil & Gas E&P,Energy,10638363,10948760,52800221184
+2957,GBNH,Medical Care Facilities,Healthcare,43857,90720,27744136
+1859,RGCO,Utilities—Regulated Gas,Utilities,41345,124680,197008272
+1665,OMGA,Biotechnology,Healthcare,164236,491120,264661104
+79,ROST,Apparel Retail,Consumer Cyclical,2280132,2486820,37857099776
+536,ZLAB,Biotechnology,Healthcare,611668,531730,2830642944
+903,KALU,Aluminum,Basic Materials,119318,90740,1165231744
+1247,STM,Semiconductors,Technology,3439680,2768430,45249183744
+3483,OBLG,Software—Application,Technology,278398,102400,3563629
+2999,SHFS,Banks—Regional,Financial Services,730198,78300,24499408
+1161,ROP,Software—Application,Technology,502504,477730,50885955584
+1434,WPP,Advertising Agencies,Communication Services,106836,147530,11446992896
+1793,RCAC,Shell Companies,Financial Services,38926,640,213262496
+3175,NXGL,Medical Instruments & Supplies,Healthcare,75060,74320,14113671
+1334,THCH,Restaurants,Consumer Cyclical,426690,310520,463405728
+2712,JRSH,Apparel Manufacturing,Consumer Cyclical,14093,31400,46886728
+3506,BSFC,Packaged Foods,Consumer Defensive,179557,428694,2989260
+1276,TGT,Discount Stores,Consumer Defensive,5277196,5377700,62245982208
+776,NMRK,Real Estate Services,Real Estate,912068,814470,1517402240
+2068,SAMA,Shell Companies,Financial Services,8134,190,137706944
+881,UPWK,Staffing & Employment Services,Industrials,2243001,1264610,1218553728
+287,GNTX,Auto Parts,Consumer Cyclical,1085654,1267390,6852172288
+1120,PWP,Capital Markets,Financial Services,317572,268990,726762048
+76,AAT,REIT—Diversified,Real Estate,463734,453670,1513360512
+758,VRNA,Biotechnology,Healthcare,491288,456180,1599497472
+2995,PMCB,Biotechnology,Healthcare,52616,33590,24823310
+905,ANY,Software—Application,Technology,142095,287384,1162861952
+1511,MOFG,Banks—Regional,Financial Services,40306,41620,337489216
+2152,LIFE,Biotechnology,Healthcare,697373,346730,121070712
+1441,WST,Medical Instruments & Supplies,Healthcare,408972,331590,28088201216
+993,ARKO,Specialty Retail,Consumer Cyclical,228549,222770,966049088
 515,FSS,Pollution & Treatment Controls,Industrials,288450,289200,3925468672
-1855,VOR,Biotechnology,Healthcare,208214,697560,198192128
-92,AME,Specialty Industrial Machinery,Industrials,984870,819240,37062684672
-2089,CALB,Banks—Regional,Financial Services,21390,8220,131973928
-144,SIRI,Entertainment,Communication Services,16660567,20005580,17910693888
-2474,AIRT,Integrated Freight & Logistics,Industrials,5454,10200,74332240
-1521,DSKE,Trucking,Industrials,278488,190320,331816992
-482,ELA,Luxury Goods,Consumer Cyclical,43327,102480,190356928
-1144,EGBN,Banks—Regional,Financial Services,431252,279940,682518400
-2263,DTOC,Shell Companies,Financial Services,4185,1430,105105072
-2853,KIRK,Home Improvement Retail,Consumer Cyclical,58963,51220,35876120
-251,TTEK,Engineering & Construction,Industrials,299339,364830,8763172864
-161,AVT,Electronics & Computer Distribution,Technology,543244,580570,4578195968
-1443,WES,Oil & Gas Midstream,Energy,818785,1002810,10326913024
-741,HEQ,Asset Management,Financial Services,32395,34010,128426552
-1003,PEBO,Banks—Regional,Financial Services,144754,129670,947503232
-1342,THS,Packaged Foods,Consumer Defensive,349057,367830,2857387776
-913,IESC,Engineering & Construction,Industrials,43203,80050,1148553856
-934,ICHR,Semiconductor Equipment & Materials,Technology,168324,159140,1097731840
-945,PLRX,Biotechnology,Healthcare,968362,1854240,1065406784
-234,PAA,Oil & Gas Midstream,Energy,3504081,2876740,9917137920
-1554,IREN,Capital Markets,Financial Services,1104444,2039240,311203200
-2954,CLPS,Information Technology Services,Technology,41427,34590,27878796
-857,MBI,Insurance—Specialty,Financial Services,507065,323610,489578656
-1530,SLVR,Shell Companies,Financial Services,43932,3350,324465632
+2352,SLGL,Biotechnology,Healthcare,15463,18160,91968352
+2583,MBTC,Shell Companies,Financial Services,1081,1360,59389844
+1654,BWB,Banks—Regional,Financial Services,109552,92300,270407904
+309,ALTR,Software—Infrastructure,Technology,291806,247140,6081408000
+87,AMT,REIT—Specialty,Real Estate,2032826,2444540,90897022976
+817,CLBT,Software—Infrastructure,Technology,205834,296510,1401767936
+697,IMAX,Entertainment,Communication Services,548304,572050,950410176
+2838,TRIB,Diagnostics & Research,Healthcare,40147,16820,37252412
+1499,IVCA,Shell Companies,Financial Services,138042,54990,346402112
+103,ALGN,Medical Devices,Healthcare,711319,597770,26366992384
+1092,BJRI,Restaurants,Consumer Cyclical,319211,303720,763424896
+2744,GDNR,Shell Companies,Financial Services,9913,7260,43577880

@@ -95,12 +95,13 @@ def arima_model():
                     predict_n = 5)
 
             p, d, q = order
-            next_forecat = forecast.values[0]
+            next_forecast = forecast[0]
             next_true = original.values[0]
-            mape = np.mean([abs(b-a)/b for a, b in zip(forecast.values, original.values)])
-            performances.append((ticker, interval, price_type, next_forecat, next_true, mape, p, d, q))
+            mape = np.mean([abs(b-a)/b for a, b in zip(forecast, original.values)])
+            performances.append((ticker, interval, price_type, next_forecast, next_true, mape, p, d, q))
 
-        except:
+        except Exception as e:
+            print(str(e))
             pass
     df_result = pd.DataFrame(performances,
         columns = ["ticker", "interval", "price_type", "next_forecast", "next_true", "mape", "p", "d", "q"] )
