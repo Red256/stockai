@@ -457,17 +457,17 @@ with tabs[5]:
             key_file_json = json.load(key_file)
 
             has_all_info = 0
-            if MY_API_KEY in key_file_json:
-                API_KEY = key_file_json[MY_API_KEY]
-                st.session_state.TEMPLATE_API_KEY = API_KEY
+            if "API_KEY" in key_file_json:
+                API_KEY = key_file_json["API_KEY"]
+                st.session_state.ac_API_KEY = API_KEY
                 has_all_info += 1
-            if MY_API_SECRET in key_file_json:
-                API_SECRET = key_file_json[MY_API_SECRET]
-                st.session_state.TEMPLATE_API_SECRET = API_SECRET
+            if "API_SECRET" in key_file_json:
+                API_SECRET = key_file_json["API_SECRET"]
+                st.session_state.ac_API_SECRET = API_SECRET
                 has_all_info += 1
-            if MY_END_POINT in key_file_json:
-                END_POINT = key_file_json[MY_END_POINT]
-                st.session_state.TEMPLATE_END_POINT = END_POINT
+            if "END_POINT" in key_file_json:
+                END_POINT = key_file_json["END_POINT"]
+                st.session_state.ac_END_POINT = END_POINT
                 has_all_info += 1
 
             if has_all_info == 3:
