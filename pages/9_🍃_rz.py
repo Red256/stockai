@@ -26,6 +26,8 @@ MY_API_KEY = 'rz_API_KEY'
 MY_API_SECRET = 'rz_API_SECRET'
 MY_END_POINT = 'rz_END_POINT'
 
+from alpaca.trading.client import TradingClient
+import alpaca_trade_api as tradeapi
 
 from scripts_rz.generate_ticker_list import choose_and_save_my_list, get_ticker_list
 from scripts_rz.get_histories import download_histories, get_one_ticker_df
@@ -42,7 +44,7 @@ from scripts_rz.auto_arima import (
         show_train_test,
         train_autoarima)
 
-from scripts_rz.model_training import load_performance, rsi_model, arima_model
+from scripts_rz.model_training import load_performance, rsi_model, arima_model, get_candidates
 
 from scripts_template.alpaca_actions_simple import get_account, get_positions,  submit_alpaca_order_simple, get_rsi, get_arima
 ############################# Pay layout ################################################
@@ -85,6 +87,16 @@ stock_tickers = get_ticker_list()
 intervals = ['1d', '1m', '5m']
 prices = ["Open", "High", "Low", "Close"]
 
+@st.cache_data
+def get_tradeclient_api():
+    MY_API_KEY = st.session_state[MY_API_KEY]
+    MY_SECRET_KEY = st.session_state[MY_SECRET_KEY]
+    MY_END_POINT = st.session_state[MY_END_POINT]
+
+    trading_client = TradingClient(MY_API_KEY, MY_SECRET_KEY, paper=True)
+    api =  tradeapi.REST(MY_API_KEY,MY_SECRET_KEY, MY_END_POINT)
+
+    return trading_client, api
 ######################################################## Data Exploration and Analysis ########################################################
 with tabs[0]:
     st.markdown("<font size=4><b>Data Exploration and Analysis: </b></font><font size=3>Get familiar with essentials about stock data.</font>", unsafe_allow_html=True)
@@ -269,7 +281,7 @@ with tabs[3]:
     st.markdown("<font size=4><b>Positioning, Model Training And Ranking</b></font><font size=3>", unsafe_allow_html=True)
     st.markdown("<font size=3><b>RSI Ranking By Performance</b></font>", unsafe_allow_html=True)
 
-    @st.cache_data
+    #@st.cache_data
     def load_():
         return load_performance("RSI"), load_performance("ARIMA")
 

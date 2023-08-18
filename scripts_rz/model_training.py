@@ -109,3 +109,23 @@ def arima_model():
     df_result["rank"] = df_result["mape"].rank(ascending=True, method="first").astype(int)
     df_result.sort_values(by="rank", ascending=True, inplace=True)
     df_result.to_csv(output_file)
+
+
+def get_candidates():
+    """
+        return two dictionaries
+    """
+    rsi_file = f"{SCRIPTS_PATH}/Ticker_performance_rsi.csv"
+    arima_file = f"{SCRIPTS_PATH}/Ticker_performance_arima.csv"
+
+    df_rsi = pd.read_csv(rsi_file)
+    df_arima = pd.read_csv(arima_file)
+    choices_rsi = {}
+    for row in df_rsi.itertuples():
+        choices_rsi[row.ticker] = f"{row.rank} {row.ticker}-- Performance: {'{:.2f}'.format(row.performance)}%"
+    choices_arima = {}
+    for row in df_arima.itertuples():
+        choices_arima[row.ticker] = \
+            f"{row.rank} {row.ticker}-- Performance: {'{:.2f}'.format(row.mape)}% p - {row.p} d - {row.d} q - {row.q}"
+
+    return choices_rsi, choices_arima
