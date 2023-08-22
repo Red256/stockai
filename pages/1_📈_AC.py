@@ -22,9 +22,9 @@ DATA_PATH = f"{PROJECT_PATH}/{_SCRIPTS_FOLDER}/data"
 SCRIPTS_PATH = f"{PROJECT_PATH}/script_ac"
 sys.path.append(PROJECT_PATH)
 
-MY_API_KEY = 'ac_API_KEY'
-MY_API_SECRET = 'ac_API_SECRET'
-MY_END_POINT = 'ac_END_POINT'
+ac_API_KEY = 'ac_API_KEY'
+ac_API_SECRET = 'ac_API_SECRET'
+ac_END_POINT = 'ac_END_POINT'
 
 from alpaca.trading.client import TradingClient
 import alpaca_trade_api as tradeapi
@@ -90,12 +90,12 @@ prices = ["Open", "High", "Low", "Close"]
 
 @st.cache_data
 def get_tradeclient_api():
-    MY_API_KEY = st.session_state[MY_API_KEY]
-    MY_SECRET_KEY = st.session_state[MY_SECRET_KEY]
-    MY_END_POINT = st.session_state[MY_END_POINT]
+    ac_API_KEY = st.session_state["ac_API_KEY"]
+    ac_API_SECRET = st.session_state["ac_API_SECRET"]
+    ac_END_POINT = st.session_state["ac_END_POINT"]
 
-    trading_client = TradingClient(MY_API_KEY, MY_SECRET_KEY, paper=True)
-    api =  tradeapi.REST(MY_API_KEY,MY_SECRET_KEY, MY_END_POINT)
+    trading_client = TradingClient(ac_API_KEY, ac_API_SECRET, paper=True)
+    api =  tradeapi.REST(ac_API_KEY,ac_API_SECRET, ac_END_POINT)
 
     return trading_client, api
 
@@ -335,7 +335,7 @@ with tabs[4]:
     st.markdown(f"### Action")
     alpaca_action = st.radio( "Action", ('Buy', 'Sell'), index=1, horizontal =True)
 
-    if MY_API_KEY not in st.session_state:
+    if "ac_API_KEY" not in st.session_state:
         st.warning(f"### Alpaca Paper Trade API KEY not available. Please load keys to proceed")
     else:
 
@@ -443,13 +443,13 @@ with tabs[5]:
 
     # st.session_state.update(st.session_state) # only need when run in cloud
 
-    if MY_API_KEY in st.session_state:
+    if "ac_API_KEY" in st.session_state:
         st.markdown("alpaca api key and secret have already been loaded")
         reload = st.button("re-load/refresh api key/secret")
         if reload:
-            del st.session_state[MY_API_KEY]
-            del st.session_state[MY_API_SECRET]
-            del st.session_state[MY_END_POINT]
+            del st.session_state["ac_API_KEY"]
+            del st.session_state["ac_API_SECRET"]
+            del st.session_state["ac_END_POINT"]
     else:
         col1, col2 = st.columns([3, 5])
         with col1:
@@ -460,15 +460,15 @@ with tabs[5]:
             has_all_info = 0
             if "ac_API_KEY" in key_file_json:
                 API_KEY = key_file_json["ac_API_KEY"]
-                st.session_state.ac_API_KEY = API_KEY
+                st.session_state["ac_API_KEY"] = API_KEY
                 has_all_info += 1
             if "ac_API_SECRET" in key_file_json:
                 API_SECRET = key_file_json["ac_API_SECRET"]
-                st.session_state.ac_API_SECRET = API_SECRET
+                st.session_state["ac_API_SECRET"] = API_SECRET
                 has_all_info += 1
             if "ac_END_POINT" in key_file_json:
                 END_POINT = key_file_json["ac_END_POINT"]
-                st.session_state.ac_END_POINT = END_POINT
+                st.session_state["ac_END_POINT"] = END_POINT
                 has_all_info += 1
 
             if has_all_info == 3:

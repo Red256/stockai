@@ -1,4 +1,4 @@
-
+# %%writefile /content/drive/MyDrive/StocksFolder/scripts_rz/📈_AC.py
 import streamlit as st
 import pandas as pd
 import json
@@ -11,10 +11,10 @@ import plotly.graph_objects as go
 import matplotlib.pyplot as plt
 plt.rcParams.update({'font.size': 8})
 
-st.set_page_config(page_title= "Camp 2: In Action", page_icon = "😎", layout="wide")
+st.set_page_config(page_title= "Camp 2: In Action", page_icon = "📈", layout="wide")
 
-# data source: stockai/data
-#scripts folder: stockai/scripts_xx. here stockai/scripts_rz
+# data source: StocksFolder/data
+#scripts folder: StocksFolder/scripts_rz. here StocksFolder/scripts_rz
 
 _SCRIPTS_FOLDER = "scripts_rz"
 PROJECT_PATH = os.getcwd()
@@ -22,9 +22,9 @@ DATA_PATH = f"{PROJECT_PATH}/{_SCRIPTS_FOLDER}/data"
 SCRIPTS_PATH = f"{PROJECT_PATH}/scripts_rz"
 sys.path.append(PROJECT_PATH)
 
-MY_API_KEY = 'rz_API_KEY'
-MY_API_SECRET = 'rz_API_SECRET'
-MY_END_POINT = 'rz_END_POINT'
+rz_API_KEY = 'rz_API_KEY'
+rz_API_SECRET = 'rz_API_SECRET'
+rz_END_POINT = 'rz_END_POINT'
 
 from alpaca.trading.client import TradingClient
 import alpaca_trade_api as tradeapi
@@ -45,6 +45,7 @@ from scripts_rz.auto_arima import (
         train_autoarima)
 
 from scripts_rz.model_training import load_performance, rsi_model, arima_model, get_candidates
+
 
 from scripts_template.alpaca_actions_simple import get_account, get_positions,  submit_alpaca_order_simple, get_rsi, get_arima
 ############################# Pay layout ################################################
@@ -68,7 +69,7 @@ st.markdown("""
 #             </style>
 #             ''', unsafe_allow_html=True,
 # )
-st.title(f"😎 Roy's StockAI Project")
+st.title(f"🍃 Roy's StockAI Project")
 
 ######################################################## tabs ########################################################
 listTabs =["🧑‍🏭Data Exploration",
@@ -89,14 +90,15 @@ prices = ["Open", "High", "Low", "Close"]
 
 @st.cache_data
 def get_tradeclient_api():
-    MY_API_KEY = st.session_state[MY_API_KEY]
-    MY_SECRET_KEY = st.session_state[MY_SECRET_KEY]
-    MY_END_POINT = st.session_state[MY_END_POINT]
+    rz_API_KEY = st.session_state["rz_API_KEY"]
+    rz_API_SECRET = st.session_state["rz_API_SECRET"]
+    rz_END_POINT = st.session_state["rz_END_POINT"]
 
-    trading_client = TradingClient(MY_API_KEY, MY_SECRET_KEY, paper=True)
-    api =  tradeapi.REST(MY_API_KEY,MY_SECRET_KEY, MY_END_POINT)
+    trading_client = TradingClient(rz_API_KEY, rz_API_SECRET, paper=True)
+    api =  tradeapi.REST(rz_API_KEY,rz_API_SECRET, rz_END_POINT)
 
     return trading_client, api
+
 ######################################################## Data Exploration and Analysis ########################################################
 with tabs[0]:
     st.markdown("<font size=4><b>Data Exploration and Analysis: </b></font><font size=3>Get familiar with essentials about stock data.</font>", unsafe_allow_html=True)
@@ -183,7 +185,7 @@ with tabs[0]:
 
 ######################################################## RSI ########################################################
 with tabs[1]:
-    st.markdown("<font size=4><b>RSI(Relative Strength Index) Trade Strategy </b></font><font size=3>Check and Inspect RSI Positioning.</font>", unsafe_allow_html=True)
+    st.markdown("<font size=4><b>Trade Strategies RSI </b></font><font size=3>Check and Inspect RSI Positioning.</font>", unsafe_allow_html=True)
     col1, col2, col3, col4, col5 = st.columns([2,2,2,2,2 ])
     with col1:
         ticker_position = st.selectbox("Choose a Ticker for Positioning", index=0, options = stock_tickers)
@@ -212,7 +214,7 @@ with tabs[1]:
 
 ######################################################## ARMIA ########################################################
 with tabs[2]:
-    st.markdown("<font size=4><b>ARIMA Model Trade Strategy </b></font><font size=3>Check and Inspect ARIMA Modeling.</font>", unsafe_allow_html=True)
+    st.markdown("<font size=4><b>Trade Strategies ARIMA </b></font><font size=3>Check and Inspect ARIMA Modeling.</font>", unsafe_allow_html=True)
     col1, col2, col3, col4, col5 = st.columns([2,2,2,2,2 ])
     with col1:
         ticker_arima = st.selectbox("Choose a Ticker for ARIMA Modeling", index=0, options = stock_tickers)
@@ -285,7 +287,7 @@ with tabs[3]:
     def load_():
         return load_performance("RSI"), load_performance("ARIMA")
 
-    df_rsi_rz, df_arima_rz = load_()
+    df_rsi_ac, df_arima_ac = load_()
 
     col1, col2, col3 , col4, col5 = st.columns([2,2,2,2,14])
     with col1:
@@ -293,30 +295,30 @@ with tabs[3]:
         st.markdown("RSI Last Trained:")
     with col2:
         col2.markdown("")
-        if df_rsi_rz.shape[0]>0:
-            trained_on = df_rsi_rz.iloc[0]["trained_on"]
+        if df_rsi_ac.shape[0]>0:
+            trained_on = df_rsi_ac.iloc[0]["trained_on"]
         st.markdown(f"<font color=blue><b>{trained_on}</b></font>", unsafe_allow_html=True)
 
     with col4:
         # col4.markdown("")
         # col4.markdown("")
         btn_train_rsi = st.button("Retrain RSI")
-    st.dataframe(df_rsi_rz)
+    st.dataframe(df_rsi_ac)
 
     st.markdown("<font size=3><b>ARIMA Ranking By Performance</b></font>", unsafe_allow_html=True)
     col1, col2, col3 , col4, col5 = st.columns([2,2,2,2,8])
     with col1:
         st.markdown("ARIMA Last Trained")
     with col2:
-        if df_arima_rz.shape[0]>0:
-            trained_on = df_arima_rz.iloc[0]["trained_on"]
+        if df_arima_ac.shape[0]>0:
+            trained_on = df_arima_ac.iloc[0]["trained_on"]
         st.markdown(f"<font color=blue><b>{trained_on}</b></font>", unsafe_allow_html=True)
 
     with col4:
         # col4.markdown("")
         # col4.markdown("")
         btn_train_arima = st.button("Retrain ARIMA")
-    st.dataframe(df_arima_rz)
+    st.dataframe(df_arima_ac)
 
     if btn_train_rsi:
         st.warning("Retrain RSI...")
@@ -326,7 +328,6 @@ with tabs[3]:
         st.warning("Retrain ARIMA Model. It will take a few minutes to hours depending on how many tickers you are training")
         arima_model()
 
-
 ######################################################## Trading Zone ########################################################
 with tabs[4]:
     st.markdown("<font size=5><b>Positions and Trading Zone. </b></font><font size=3> <font size=3><b>Paper Money Only</b></font>", unsafe_allow_html=True)
@@ -334,7 +335,7 @@ with tabs[4]:
     st.markdown(f"### Action")
     alpaca_action = st.radio( "Action", ('Buy', 'Sell'), index=1, horizontal =True)
 
-    if MY_API_KEY not in st.session_state:
+    if "rz_API_KEY" not in st.session_state:
         st.warning(f"### Alpaca Paper Trade API KEY not available. Please load keys to proceed")
     else:
 
@@ -442,13 +443,13 @@ with tabs[5]:
 
     # st.session_state.update(st.session_state) # only need when run in cloud
 
-    if MY_API_KEY in st.session_state:
+    if "rz_API_KEY" in st.session_state:
         st.markdown("alpaca api key and secret have already been loaded")
         reload = st.button("re-load/refresh api key/secret")
         if reload:
-            del st.session_state[MY_API_KEY]
-            del st.session_state[MY_API_SECRET]
-            del st.session_state[MY_END_POINT]
+            del st.session_state["rz_API_KEY"]
+            del st.session_state["rz_API_SECRET"]
+            del st.session_state["rz_END_POINT"]
     else:
         col1, col2 = st.columns([3, 5])
         with col1:
@@ -457,17 +458,17 @@ with tabs[5]:
             key_file_json = json.load(key_file)
 
             has_all_info = 0
-            if "API_KEY" in key_file_json:
-                API_KEY = key_file_json["API_KEY"]
-                st.session_state.rz_API_KEY = API_KEY
+            if "rz_API_KEY" in key_file_json:
+                API_KEY = key_file_json["rz_API_KEY"]
+                st.session_state["rz_API_KEY"] = API_KEY
                 has_all_info += 1
-            if "API_SECRET" in key_file_json:
-                API_SECRET = key_file_json["API_SECRET"]
-                st.session_state.rz_API_SECRET = API_SECRET
+            if "rz_API_SECRET" in key_file_json:
+                API_SECRET = key_file_json["rz_API_SECRET"]
+                st.session_state["rz_API_SECRET"] = API_SECRET
                 has_all_info += 1
-            if "END_POINT" in key_file_json:
-                END_POINT = key_file_json["END_POINT"]
-                st.session_state.rz_END_POINT = END_POINT
+            if "rz_END_POINT" in key_file_json:
+                END_POINT = key_file_json["rz_END_POINT"]
+                st.session_state["rz_END_POINT"] = END_POINT
                 has_all_info += 1
 
             if has_all_info == 3:
