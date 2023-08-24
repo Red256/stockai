@@ -366,7 +366,7 @@ with tabs[4]:
         with col2:
             st.markdown(f"Available Funding for Buy: <font color=blue><b>{cashbalance} </b></font>", unsafe_allow_html=True)
 
-        @st.cache_data
+        #@st.cache_data
         def get_performance_ranking_list():
             rsi_candidates, arima_candidates = get_candidates()
             return rsi_candidates, arima_candidates
