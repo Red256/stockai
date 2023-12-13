@@ -1,0 +1,2 @@
+# stockai
+StockAI Project
