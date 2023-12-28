@@ -1,2 +1,2 @@
-# hsstockai
-high school ai project
+# stockai
+StockAI Project
