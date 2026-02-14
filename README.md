@@ -1,2 +1,2 @@
 # stockai
-StockAI Project
+Stock market analysis, modeling, and prediction
